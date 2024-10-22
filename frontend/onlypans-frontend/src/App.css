@@ -12,3 +12,22 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
+.scrollable-container {
+  scrollbar-width: thin;
+  scrollbar-color: #888 transparent;
+}
+
+/* For Webkit browsers (Chrome, Safari) */
+.scrollable-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
