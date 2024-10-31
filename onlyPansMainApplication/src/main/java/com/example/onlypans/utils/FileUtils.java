@@ -1,4 +1,4 @@
-package com.example.onlypans.onlypans.utils;
+package com.example.onlypans.utils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

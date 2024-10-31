@@ -1,4 +1,4 @@
-package com.example.onlypans.onlypans.config;
+package com.example.onlypans.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
