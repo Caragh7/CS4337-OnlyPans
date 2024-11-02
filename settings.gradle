@@ -1,5 +1,6 @@
 rootProject.name = 'onlypans'
 
 include 'onlyPansMainApplication'
-include 'userApp'
+include 'userService'
+include 'postService'
 
