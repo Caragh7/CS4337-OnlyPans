@@ -1,1 +1,9 @@
 rootProject.name = 'onlypans'
+
+include 'onlyPansMainApplication'
+include 'backend_services:userService'
+include 'backend_services:postService'
+include 'backend_services:creatorService'
+include 'backend_services:subscriptionService'
+findProject(':backend_services:subscriptionService')?.name = 'subscriptionService'
+
