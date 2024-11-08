@@ -1,10 +1,6 @@
 package onlypans.userService.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class Account {
@@ -13,20 +9,15 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String refreshToken;
-    private String accessToken;
-
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
-    // Constructors, Getters, and Setters
-    public Account() {}
-
-    public Account(String refreshToken, String accessToken, User user) {
-        this.refreshToken = refreshToken;
-        this.accessToken = accessToken;
-        this.user = user;
-    }
+//    @Column(nullable = false)
+//    private String refreshToken;
+//
+//    @Column(nullable = false)
+//    private String accessToken;
 
     // Getters and Setters
     public Long getId() {
@@ -37,22 +28,6 @@ public class Account {
         this.id = id;
     }
 
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
     public User getUser() {
         return user;
     }
@@ -60,4 +35,20 @@ public class Account {
     public void setUser(User user) {
         this.user = user;
     }
+
+//    public String getRefreshToken() {
+//        return refreshToken;
+//    }
+//
+//    public void setRefreshToken(String refreshToken) {
+//        this.refreshToken = refreshToken;
+//    }
+//
+//    public String getAccessToken() {
+//        return accessToken;
+//    }
+//
+//    public void setAccessToken(String accessToken) {
+//        this.accessToken = accessToken;
+//    }
 }
