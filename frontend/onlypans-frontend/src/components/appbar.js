@@ -12,18 +12,12 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import logo from '../assets/textOnly.png';
-import user from '../assets/user.png'
-
-
-/*
-*  Source: https://mui.com/material-ui/react-app-bar/#app-bar-with-responsive-menu
-* */
-
+import user from '../assets/user.png';
 
 const pages = ['']; // Placeholder
 const settings = ['Profile', 'Logout'];
 
-function ResponsiveAppBar() {
+function ResponsiveAppBar({ onToggleCreatePost }) {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -43,7 +37,7 @@ function ResponsiveAppBar() {
     };
 
     return (
-        <AppBar position="static" sx={{ backgroundColor: '#fff'}}>
+        <AppBar position="static" sx={{ backgroundColor: '#fff' }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Typography
@@ -98,41 +92,27 @@ function ResponsiveAppBar() {
                             ))}
                         </Menu>
                     </Box>
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'flex', md: 'none' },
-                            flexGrow: 1,
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        LOGO
-                    </Typography>
+
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page) => (
                             <Button
                                 key={page}
                                 onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
+                                sx={{ my: 2, color: 'black', display: 'block' }}
                             >
                                 {page}
                             </Button>
                         ))}
                     </Box>
+
+                    <Button variant="contained" color="primary" onClick={onToggleCreatePost} sx={{ mr: 2 }}>
+                        Create Post
+                    </Button>
+
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
-
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                 <Avatar alt="User Profile Picture" src={user} />
-
                             </IconButton>
                         </Tooltip>
                         <Menu
