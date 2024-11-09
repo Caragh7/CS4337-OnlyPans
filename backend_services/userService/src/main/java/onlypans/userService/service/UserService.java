@@ -21,6 +21,7 @@ public class UserService {
 
     public User createUser(User user) {
         try {
+            userRepository.save(user);
             Account account = new Account();
             account.setUser(user);
             accountService.createAccount(account);

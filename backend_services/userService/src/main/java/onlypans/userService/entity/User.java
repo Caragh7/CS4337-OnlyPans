@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 
 @Entity
+@Table(name = "User") // Specify the exact table name here
 public class User {
 
     @Id
@@ -13,7 +14,7 @@ public class User {
     private String username;
     private String email;
     private String password;
-    private String stripeId;
+    private String stripe_Id;
 
     @OneToOne(mappedBy = "user")
     private Account account;

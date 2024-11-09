@@ -3,30 +3,28 @@ package onlypans.userService.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "Account") // Specify the exact table name here
 public class Account {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-incremented primary key
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId", referencedColumnName = "id", nullable = false) // Foreign key to User.id
     private User user;
 
-//    @Column(nullable = false)
-//    private String refreshToken;
-//
-//    @Column(nullable = false)
-//    private String accessToken;
+
+    @Column(nullable = true)
+    private String refresh_token;
+
+    @Column(nullable = true)
+    private String access_token;
 
     // Getters and Setters
     public Long getId() {
-        return id;
+        return user.getId();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public User getUser() {
         return user;
