@@ -1,0 +1,93 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Setup Node.js for Frontend') {
+            steps {
+                script {
+                    // Install Node.js if necessary using NVM or system package
+                    sh 'curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -'
+                    sh 'sudo apt-get install -y nodejs'
+                }
+            }
+        }
+        
+        stage('Install Frontend Dependencies') {
+            steps {
+                dir('frontend/onlypans-frontend') {
+                    sh 'npm install'
+                }
+            }
+        }
+        
+        stage('Run Frontend Tests') {
+            steps {
+                dir('frontend/onlypans-frontend') {
+                    sh 'npm test'
+                }
+            }
+        }
+        
+        stage('Build Frontend') {
+            steps {
+                dir('frontend/onlypans-frontend') {
+                    sh 'npm run build'
+                }
+            }
+        }
+        
+        stage('Setup Java for Backend') {
+            steps {
+                script {
+                    // Ensure Java 11 is installed
+                    sh 'sudo apt-get update'
+                    sh 'sudo apt-get install -y openjdk-11-jdk'
+                }
+            }
+        }
+        
+        stage('Build Backend') {
+            steps {
+                dir('backend_services') {
+                    sh './gradlew build'
+                }
+            }
+        }
+        
+        stage('Run Backend Tests') {
+            steps {
+                dir('backend_services') {
+                    sh './gradlew test'
+                }
+            }
+        }
+
+        stage('Deploy Application') {
+            steps {
+                script {
+                    echo 'Deploying application...'
+                    // Replace this with your actual deployment command
+                    sh './deploy.sh' // Ensure your deployment script is ready and executable
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline completed.'
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
