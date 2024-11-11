@@ -1,5 +1,6 @@
 package onlypans.userService.controller;
 
+import onlypans.common.dtos.CreatorProfileRequest;
 import onlypans.userService.entity.User;
 import onlypans.userService.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,4 +43,16 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @PostMapping("/{userId}/upgrade")
+    public ResponseEntity<String> upgradeToCreatorProfile(
+            @PathVariable Long userId,
+            @RequestBody CreatorProfileRequest request) {
+        request.setUserId(userId);
+
+        userService.upgradeToCreatorProfile(request);
+        return ResponseEntity.ok("User upgraded to creator profile");
+    }
 }
+

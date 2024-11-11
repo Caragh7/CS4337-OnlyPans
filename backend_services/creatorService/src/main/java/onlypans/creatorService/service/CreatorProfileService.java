@@ -1,5 +1,6 @@
 package onlypans.creatorService.service;
 
+import onlypans.common.dtos.CreatorProfileRequest;
 import onlypans.common.exceptions.*;
 import onlypans.creatorService.entity.CreatorProfile;
 import onlypans.creatorService.repository.CreatorProfileRepository;
@@ -21,15 +22,16 @@ public class CreatorProfileService {
         this.creatorProfileRepository = creatorProfileRepository;
     }
 
-    public CreatorProfile createCreatorProfile(CreatorProfile creatorProfile) {
+    public CreatorProfile createCreatorProfile(CreatorProfileRequest request) {
         try {
-            return creatorProfileRepository.save(creatorProfile);
+            CreatorProfile profile = new CreatorProfile(request.getUserId(), request.getFirstName(), request.getLastName());
+            return creatorProfileRepository.save(profile);
         } catch (Exception e) {
             throw new UnableToCreateResourceException("Unable to create Creator Profile", e);
         }
     }
 
-    public Optional<CreatorProfile> getCreatorProfileById(UUID id) {
+    public Optional<CreatorProfile> getCreatorProfileById(Long id) {
         try {
             return creatorProfileRepository.findById(id);
         } catch (ResourceNotFoundException e) {
@@ -37,7 +39,7 @@ public class CreatorProfileService {
         }
     }
 
-    public List<CreatorProfile> getCreatorProfilesByUserId(String userId) {
+    public List<CreatorProfile> getCreatorProfilesByUserId(Long userId) {
         try {
             return creatorProfileRepository.findByUserId(userId);
         } catch (Exception e) {
@@ -45,7 +47,7 @@ public class CreatorProfileService {
         }
     }
 
-    public CreatorProfile updateCreatorProfile(UUID id, CreatorProfile updatedProfile) {
+    public CreatorProfile updateCreatorProfile(Long id, CreatorProfile updatedProfile) {
         return creatorProfileRepository.findById(id).map(profile -> {
             profile.setFirstName(updatedProfile.getFirstName());
             profile.setLastName(updatedProfile.getLastName());
@@ -53,7 +55,7 @@ public class CreatorProfileService {
         }).orElseThrow(() -> new ResourceNotFoundException("Creator Profile not found with ID " + id));
     }
 
-    public void deleteCreatorProfile(UUID id) {
+    public void deleteCreatorProfile(Long id) {
         try {
             creatorProfileRepository.deleteById(id);
         } catch (Exception e) {
