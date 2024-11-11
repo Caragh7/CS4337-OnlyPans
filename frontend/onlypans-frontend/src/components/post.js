@@ -1,44 +1,57 @@
 import * as React from 'react';
 import { Card, CardContent, CardMedia, Typography, Avatar, Box, IconButton } from '@mui/material';
-import user from '../assets/user.png'
-import like from '../assets/icons/like.png'
-import comment from '../assets/icons/speech-bubble.png'
-import placeholder from '../assets/placeholder.jpg'
+import user from '../assets/user.png';
+import like from '../assets/icons/like.png';
+import comment from '../assets/icons/speech-bubble.png';
+import placeholder from '../assets/placeholder.jpg';
+import { formatDistanceToNow } from 'date-fns';
 
-function PostCard() {
+function PostCard({ post }) {
+
+
+    const cleanMediaUrl = post.mediaUrl ? post.mediaUrl.split('?')[0] : placeholder;
+
+    const formattedTimestamp = post.timestamp
+        ? formatDistanceToNow(new Date(post.timestamp), { addSuffix: true })
+        : '';
+
+    console.log(cleanMediaUrl);
+
     return (
-        <Card sx={{ maxWidth: 750, borderRadius: 4, boxShadow: 3 }}>
+        <Card sx={{
+            width: 600,
+            height: 800,
+            borderRadius: 4,
+            boxShadow: 3,
+            display: 'flex',
+            flexDirection: 'column',
+        }}>
             <CardMedia
                 component="img"
-                height="400"
-                image={placeholder}
-                alt="food picture"
+                image={cleanMediaUrl}
+                alt="post image"
+                sx={{
+                    width: '100%',
+                    height: 600,
+                    objectFit: 'cover',
+                }}
             />
 
-            <CardContent>
-                {/* Page button placeholders */}
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                    <Box sx={{ width: 10, height: 10, bgcolor: 'black', borderRadius: '50%', mx: 0.5 }} />
-                    <Box sx={{ width: 10, height: 10, bgcolor: 'gray', borderRadius: '50%', mx: 0.5 }} />
-                    <Box sx={{ width: 10, height: 10, bgcolor: 'gray', borderRadius: '50%', mx: 0.5 }} />
-                </Box>
-
+            <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Avatar alt="John Doe" src={user} />
+                    <Avatar alt={post.authorName || "User"} src={user} />
                     <Box sx={{ ml: 2 }}>
                         <Typography variant="body2" color="text.primary">
-                            OnlyPans User
+                            {post.authorName || "OnlyPans User"} {formattedTimestamp && `- ${formattedTimestamp}`}
                         </Typography>
                     </Box>
                 </Box>
 
-
-                {/* post content */}
-                <Typography variant="body2" color="text.secondary">
-                    pay for my OnlyPans and see more! 🤤
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    {post.contentDescription || "Check out this recipe!"}
                 </Typography>
 
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <IconButton aria-label="like">
                         <img src={like} alt="like" style={{ height: '24px', width: '24px' }} />
                     </IconButton>
