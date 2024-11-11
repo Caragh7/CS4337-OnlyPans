@@ -40,4 +40,10 @@ public class PostController {
         String presignedUrl = postService.getPresignedUrl(fileName);
         return new ResponseEntity<>(presignedUrl, HttpStatus.OK);
     }
+
+    @GetMapping
+    public ResponseEntity<List<Post>> getAllPosts() {
+        List<Post> posts = postService.getAllPosts();
+        return new ResponseEntity<>(posts, HttpStatus.OK);
+    }
 }
