@@ -13,23 +13,37 @@ import java.util.List;
 @RequestMapping("/posts")
 public class PostController {
     // api endpoints for post application
-    @Autowired
-    private PostService postService;
+    private final PostService postService;
 
-    @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post post) {
-        return new ResponseEntity<>(postService.createPost(post), HttpStatus.CREATED);
+    @Autowired
+    public PostController(PostService postService) {
+        this.postService = postService;
     }
 
-    @GetMapping("/{id}")
+    @PostMapping
+    public ResponseEntity<Post> createPost(@RequestBody Post post, @RequestParam String fileName) {
+        if (post == null || fileName == null || fileName.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(postService.createPost(post, fileName), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<Post> getPostById(@PathVariable Long id) {
         return postService.getPostById(id)
                 .map(post -> new ResponseEntity<>(post, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/media_url")
+    public ResponseEntity<String> getPresignedUrl(@RequestParam String fileName) {
+        String presignedUrl = postService.getPresignedUrl(fileName);
+        return new ResponseEntity<>(presignedUrl, HttpStatus.OK);
+    }
+
     @GetMapping
-    public List<Post> getAllPosts() {
-        return postService.getAllPosts();
+    public ResponseEntity<List<Post>> getAllPosts() {
+        List<Post> posts = postService.getAllPosts();
+        return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 }
