@@ -4,6 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+configs/
 
 ### STS ###
 .apt_generated
@@ -37,4 +38,4 @@ out/
 .vscode/
 
 ### Ignore environment variables ###
-.env
+backend_services/subscriptionService/src/main/java/onlypans/subscriptionService/.env

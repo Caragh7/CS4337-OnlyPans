@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # Keycloak service
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=riBq3sb8xaGlztgFpTj7zzU9HavsPH
+      - KC_DB=mysql
+      - KC_DB_URL=jdbc:mysql://176.9.63.100:3131/OnlyPansKC
+      - KC_DB_USERNAME=onlypans
+      - KC_DB_PASSWORD=soWr!qBQN5M$#4
+      - KC_HOSTNAME=localhost
+    command: start-dev
+    ports:
+      - 8081:8080
+    networks:
+      - backend
+
+  # Consul service
+  consul:
+    image: hashicorp/consul:latest
+    container_name: consul
+    restart: always
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    volumes:
+      - consul_data:/consul/data
+    ports:
+      - "8500:8500"
+    command: agent -dev -ui -bind=0.0.0.0 -client=0.0.0.0
+    depends_on:
+      - keycloak
+    networks:
+      - backend
+
+  subscription-service:
+    image: openjdk:21
+    container_name: subscription-service
+    volumes:
+      - ./backend_services/subscriptionService/build/libs/subscriptionService-1.0.0.jar:/app/service.jar
+    command: ["java", "-jar", "/app/service.jar"]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/subscription_service.env
+    ports:
+      - 8082:8080
+    networks:
+      - backend
+
+  user-service:
+    image: openjdk:21
+    container_name: user-service
+    volumes:
+      - ./backend_services/userService/build/libs/userService-1.0.0.jar:/app/service.jar
+    command: ["java", "-jar", "/app/service.jar"]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/subscription_service.env
+    ports:
+      - 8085:8080
+    networks:
+      - backend
+
+  api-gateway:
+    image: openjdk:21
+    container_name: api-gateway
+    volumes:
+      - ./api_gateway/build/libs/api_gateway-1.0.0.jar:/app/service.jar
+    command: ["java", "-jar", "/app/service.jar"]
+    depends_on:
+      - consul
+    env_file:
+      - ./configs/gateway.env
+    ports:
+      - 8083:8080
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  consul_data:

@@ -11,7 +11,6 @@ java {
     }
 }
 
-
 repositories {
     mavenCentral()
 }
@@ -23,4 +22,6 @@ dependencies {
     implementation project(':backend_services:common')
 }
 
-
+jar {
+    enabled = true
+}
