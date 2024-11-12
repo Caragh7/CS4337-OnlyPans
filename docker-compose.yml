@@ -4,15 +4,9 @@ services:
   # Keycloak service
   keycloak:
     image: quay.io/keycloak/keycloak:latest
-    environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=riBq3sb8xaGlztgFpTj7zzU9HavsPH
-      - KC_DB=mysql
-      - KC_DB_URL=jdbc:mysql://176.9.63.100:3131/OnlyPansKC
-      - KC_DB_USERNAME=onlypans
-      - KC_DB_PASSWORD=soWr!qBQN5M$#4
-      - KC_HOSTNAME=localhost
     command: start-dev
+    env_file:
+      - ./configs/keycloak.env
     ports:
       - 8081:8080
     networks:
