@@ -47,7 +47,7 @@ services:
     env_file:
       - ./configs/subscription_service.env
     ports:
-      - 8082:8080
+      - 8080:8080
     networks:
       - backend
 
