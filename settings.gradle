@@ -12,4 +12,5 @@ include 'backend_services:common'
 findProject(':backend_services:common')?.name = 'common'
 include 'backend_services:common:src.main.java.onlypans.common.exceptions'
 findProject(':backend_services:common:src.main.java.onlypans.common.exceptions')?.name = 'src.main.java.onlypans.common.exceptions'
+include 'api_gateway'
 

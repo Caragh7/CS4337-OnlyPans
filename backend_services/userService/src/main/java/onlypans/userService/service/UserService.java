@@ -82,7 +82,7 @@ public class UserService {
 
 
             // Call CreatorService to create a creator profile using REST API
-            String creatorServiceUrl = "http://creator-service/api/creators/create";
+            String creatorServiceUrl = "http://creator-service/creator-profiles/create";
             restTemplate.postForObject(creatorServiceUrl, request, String.class);
         }
 

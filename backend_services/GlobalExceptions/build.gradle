@@ -2,8 +2,8 @@ plugins {
     id 'java-library'
 }
 
-group = 'org.example'
-version = 'unspecified'
+group = 'com.onlypans'
+version = '1.0.0'
 
 java {
     toolchain {
