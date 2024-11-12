@@ -1,1 +1,4 @@
 rootProject.name = 'GlobalExceptions'
+
+include 'backend_services:common'
+include 'backend_services:GlobalExceptions'

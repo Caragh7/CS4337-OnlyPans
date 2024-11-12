@@ -2,24 +2,25 @@ plugins {
     id 'java-library'
 }
 
-
 group = 'com.onlypans'
 version = '1.0.0'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21) // Ensure this is 17 or a stable version you have installed
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
-
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    api 'org.springframework:spring-web:6.1.12'
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    implementation 'org.springframework:spring-web:6.1.12'
+}
 
+jar {
+    enabled = true
 }
