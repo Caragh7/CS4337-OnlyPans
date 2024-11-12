@@ -1,0 +1,3 @@
+rootProject.name = 'api_gateway'
+
+include 'userService', 'postService', 'creatorService'

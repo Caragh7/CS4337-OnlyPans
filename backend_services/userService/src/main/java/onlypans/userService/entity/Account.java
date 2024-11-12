@@ -1,57 +1,30 @@
 package onlypans.userService.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "Account") // Specify the exact table name here
 public class Account {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-incremented primary key
     private Long id;
 
-    private String refreshToken;
-    private String accessToken;
-
     @OneToOne
+    @JoinColumn(name = "userId", referencedColumnName = "id", nullable = false) // Foreign key to User.id
     private User user;
 
-    // Constructors, Getters, and Setters
-    public Account() {}
 
-    public Account(String refreshToken, String accessToken, User user) {
-        this.refreshToken = refreshToken;
-        this.accessToken = accessToken;
-        this.user = user;
-    }
+    @Column(nullable = true)
+    private String refresh_token;
+
+    @Column(nullable = true)
+    private String access_token;
 
     // Getters and Setters
     public Long getId() {
-        return id;
+        return user.getId();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
 
     public User getUser() {
         return user;
@@ -60,4 +33,20 @@ public class Account {
     public void setUser(User user) {
         this.user = user;
     }
+
+//    public String getRefreshToken() {
+//        return refreshToken;
+//    }
+//
+//    public void setRefreshToken(String refreshToken) {
+//        this.refreshToken = refreshToken;
+//    }
+//
+//    public String getAccessToken() {
+//        return accessToken;
+//    }
+//
+//    public void setAccessToken(String accessToken) {
+//        this.accessToken = accessToken;
+//    }
 }

@@ -1,10 +1,17 @@
 rootProject.name = 'onlypans'
 
-include 'onlyPansMainApplication'
+include 'authService'
 include 'backend_services:userService'
 include 'backend_services:postService'
 include 'backend_services:creatorService'
 include 'backend_services:subscriptionService'
 include 'backend_services:mediaService'
 findProject(':backend_services:subscriptionService')?.name = 'subscriptionService'
+include 'backend_services:GlobalExceptions'
+findProject(':backend_services:GlobalExceptions')?.name = 'GlobalExceptions'
+include 'backend_services:common'
+findProject(':backend_services:common')?.name = 'common'
+include 'backend_services:common:src.main.java.onlypans.common.exceptions'
+findProject(':backend_services:common:src.main.java.onlypans.common.exceptions')?.name = 'src.main.java.onlypans.common.exceptions'
+include 'api_gateway'
 

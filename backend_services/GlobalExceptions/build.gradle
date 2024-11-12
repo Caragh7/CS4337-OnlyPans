@@ -1,0 +1,26 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'com.onlypans'
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation 'org.springframework:spring-web:6.1.12'
+    implementation project(':backend_services:common')
+}
+
+
