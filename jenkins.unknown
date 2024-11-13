@@ -2,92 +2,47 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                checkout scm
+                // Checkout the code from the repository
+                git branch: 'main', url: 'https://github.com/Caragh7/CS4337-OnlyPans.git'
             }
         }
         
-        stage('Setup Node.js for Frontend') {
+        stage('Build') {
             steps {
-                script {
-                    // Install Node.js if necessary using NVM or system package
-                    sh 'curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -'
-                    sh 'sudo apt-get install -y nodejs'
-                }
-            }
-        }
-        
-        stage('Install Frontend Dependencies') {
-            steps {
-                dir('frontend/onlypans-frontend') {
-                    sh 'npm install'
-                }
-            }
-        }
-        
-        stage('Run Frontend Tests') {
-            steps {
-                dir('frontend/onlypans-frontend') {
-                    sh 'npm test'
-                }
-            }
-        }
-        
-        stage('Build Frontend') {
-            steps {
-                dir('frontend/onlypans-frontend') {
-                    sh 'npm run build'
-                }
-            }
-        }
-        
-        stage('Setup Java for Backend') {
-            steps {
-                script {
-                    // Ensure Java 11 is installed
-                    sh 'sudo apt-get update'
-                    sh 'sudo apt-get install -y openjdk-11-jdk'
-                }
-            }
-        }
-        
-        stage('Build Backend') {
-            steps {
-                dir('backend_services') {
-                    sh './gradlew build'
-                }
-            }
-        }
-        
-        stage('Run Backend Tests') {
-            steps {
-                dir('backend_services') {
-                    sh './gradlew test'
-                }
+                // Clean and build the project using Gradle
+                bat './gradlew clean build'
             }
         }
 
-        stage('Deploy Application') {
+        stage('Test') {
             steps {
-                script {
-                    echo 'Deploying application...'
-                    // Replace this with your actual deployment command
-                    sh './deploy.sh' // Ensure your deployment script is ready and executable
-                }
+                // Run tests using Gradle
+                bat './gradlew test'
             }
         }
+
+        stage('Package') {
+            steps {
+                // Package the project (create a jar file)
+                bat './gradlew bootJar'
+            }
+        }
+
+        //stage('Deploy') {
+          //  steps {
+                // Deploy the jar file to a target server
+          //  }
+       // }
     }
 
     post {
-        always {
-            echo 'Pipeline completed.'
-        }
         success {
-            echo 'Pipeline succeeded!'
+            echo 'Build, Test, and Deployment completed successfully.'
         }
         failure {
-            echo 'Pipeline failed!'
+            echo 'Build, Test, or Deployment failed. Please check the logs.'
         }
     }
 }
