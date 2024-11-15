@@ -4,6 +4,7 @@ services:
   # Keycloak service
   keycloak:
     image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
     command: start-dev
     env_file:
       - ./configs/keycloak.env
@@ -40,8 +41,6 @@ services:
       - api-gateway
     env_file:
       - ./configs/subscription_service.env
-    ports:
-      - 8080:8080
     networks:
       - backend
 
@@ -55,9 +54,7 @@ services:
       - consul
       - api-gateway
     env_file:
-      - ./configs/subscription_service.env
-    ports:
-      - 8085:8080
+      - ./configs/user_service.env
     networks:
       - backend
 
@@ -69,10 +66,11 @@ services:
     command: ["java", "-jar", "/app/service.jar"]
     depends_on:
       - consul
+      - keycloak
     env_file:
       - ./configs/gateway.env
     ports:
-      - 8083:8080
+      - 8080:8080
     networks:
       - backend
 
