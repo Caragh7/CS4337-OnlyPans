@@ -26,11 +26,12 @@ function App() {
     // Fetch posts only if authenticated
     useEffect(() => {
         const fetchPosts = async () => {
+          
             if (keycloak.authenticated) {
                 // test line to check if token was being printed in the console
                 // console.log("Keycloak Token:", keycloak.token);
                 try {
-                    const response = await axios.get('http://localhost:8082/posts', {
+                    const response = await axios.get('http://localhost:8080/posts', {
                         headers: {
                             Authorization: `Bearer ${keycloak.token}`
                         }
@@ -39,6 +40,7 @@ function App() {
                 } catch (error) {
                     console.error('Error fetching posts:', error);
                 }
+
             }
         };
 

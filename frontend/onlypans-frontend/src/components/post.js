@@ -8,7 +8,6 @@ import { formatDistanceToNow } from 'date-fns';
 
 function PostCard({ post }) {
 
-
     const cleanMediaUrl = post.mediaUrl ? post.mediaUrl.split('?')[0] : placeholder;
 
     const formattedTimestamp = post.timestamp
