@@ -54,9 +54,9 @@ const styles = {
     },
     logo: {
         width: '50%',
-        opacity:'70%',
+        opacity: '70%',
     },
-    google_icon:{
+    google_icon: {
         width: '24px'
     }
 };
