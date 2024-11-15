@@ -2,10 +2,15 @@ import './App.css';
 import ResponsiveAppBar from "./components/appbar";
 import CreatePost from "./components/createpost";
 import PostCard from "./components/post";
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 import axios from 'axios';
+import {useKeycloak} from '@react-keycloak/web';
 
 function App() {
+
+    // Pass the token as an Authorisation header with each request
+
+    const {keycloak, initialized} = useKeycloak();
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [posts, setPosts] = useState([]);
 
@@ -18,29 +23,48 @@ function App() {
         setPosts((prevPosts) => [newPost, ...prevPosts]);
     };
 
-
-
-    // We are returning all posts for the minute, we will need to consider subscriptions, etc.
+    // Fetch posts only if authenticated
     useEffect(() => {
         const fetchPosts = async () => {
-            try {
-                const response = await axios.get('http://localhost:8082/posts');
-                setPosts(response.data);
-            } catch (error) {
-                console.error('Error fetching posts:', error);
+            if (keycloak.authenticated) {
+                // test line to check if token was being printed in the console
+                // console.log("Keycloak Token:", keycloak.token);
+                try {
+                    const response = await axios.get('http://localhost:8082/posts', {
+                        headers: {
+                            Authorization: `Bearer ${keycloak.token}`
+                        }
+                    });
+                    setPosts(response.data);
+                } catch (error) {
+                    console.error('Error fetching posts:', error);
+                }
             }
         };
-        fetchPosts();
-    }, []);
+
+        if (initialized) {
+            fetchPosts();
+        }
+    }, [initialized, keycloak.authenticated, keycloak.token]);
+
+    // Render loading or redirect to login if not authenticated
+    if (!initialized) {
+        return <div>Loading...</div>;
+    }
+
+    if (!keycloak.authenticated) {
+        keycloak.login();
+        return <div>Redirecting to login...</div>;
+    }
 
     return (
         <div>
-            <ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost} />
-            <CreatePost open={showCreatePost} onClose={handleToggleCreatePost} onPostCreate={handlePostCreate} />
+            <ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost}/>
+            <CreatePost open={showCreatePost} onClose={handleToggleCreatePost} onPostCreate={handlePostCreate}/>
 
             <div style={styles.scrollableContainer}>
                 {posts.map((post) => (
-                    <PostCard key={post.id} post={post} />
+                    <PostCard key={post.id} post={post}/>
                 ))}
             </div>
         </div>
