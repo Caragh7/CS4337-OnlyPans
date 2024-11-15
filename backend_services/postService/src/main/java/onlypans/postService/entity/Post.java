@@ -7,14 +7,22 @@ import java.time.LocalDateTime;
 
 @Entity
 public class Post {
-// fields for post class, getters and setters
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-private Long id;
-private String contentDescription;
-private String authorName;
-private String mediaUrl;
-private LocalDateTime timestamp;
+
+    // fields for post class, getters and setters
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(length = 500)
+    private String contentDescription;
+
+    @Column(length = 50)
+    private String authorName;
+
+    @Column(columnDefinition = "TEXT")
+    private String mediaUrl;
+
+    private LocalDateTime timestamp;
 
 
     @PrePersist

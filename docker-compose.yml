@@ -40,8 +40,6 @@ services:
       - api-gateway
     env_file:
       - ./configs/subscription_service.env
-    ports:
-      - 8080:8080
     networks:
       - backend
 
@@ -55,9 +53,7 @@ services:
       - consul
       - api-gateway
     env_file:
-      - ./configs/subscription_service.env
-    ports:
-      - 8085:8080
+      - ./configs/user_service.env
     networks:
       - backend
 
@@ -72,7 +68,35 @@ services:
     env_file:
       - ./configs/gateway.env
     ports:
-      - 8083:8080
+      - 8080:8080
+    networks:
+      - backend
+
+  post-service:
+    image: openjdk:21
+    container_name: post-service
+    volumes:
+      - ./backend_services/postService/build/libs/postService-1.0.0.jar:/app/service.jar
+    command: ["java", "-jar", "/app/service.jar"]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/post_service.env
+    networks:
+      - backend
+
+  media-service:
+    image: openjdk:21
+    container_name: media-service
+    volumes:
+      - ./backend_services/mediaService/build/libs/mediaService-1.0.0.jar:/app/service.jar
+    command: [ "java", "-jar", "/app/service.jar" ]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/media_service.env
     networks:
       - backend
 

@@ -21,12 +21,10 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post post, @RequestParam String fileName) {
-        if (post == null || fileName == null || fileName.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(postService.createPost(post, fileName), HttpStatus.CREATED);
+    public ResponseEntity<Post> createPost(@RequestBody Post post) {
+        return new ResponseEntity<>(postService.createPost(post, post.getMediaUrl()), HttpStatus.CREATED);
     }
+
 
     @GetMapping("/{id:\\d+}")
     public ResponseEntity<Post> getPostById(@PathVariable Long id) {

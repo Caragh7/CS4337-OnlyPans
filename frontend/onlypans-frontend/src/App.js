@@ -24,7 +24,7 @@ function App() {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await axios.get('http://localhost:8082/posts');
+                const response = await axios.get('http://localhost:8080/posts');
                 setPosts(response.data);
             } catch (error) {
                 console.error('Error fetching posts:', error);
