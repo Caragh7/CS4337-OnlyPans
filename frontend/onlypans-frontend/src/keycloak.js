@@ -1,11 +1,15 @@
 // src/keycloak.js
 import Keycloak from 'keycloak-js';
 
-const keycloak = new Keycloak({
-    // Please enter the credentials provided on discord here
-    url: 'http://localhost:8081/',
-    realm: 'onlypans',
-    clientId: 'onlypans-frontend'
-});
+let keycloakInstance;
 
-export default keycloak;
+export default function getKeycloak() {
+    if (!keycloakInstance) {
+        keycloakInstance = new Keycloak({
+            url: 'http://localhost:8081/',
+            realm: 'onlypans',
+            clientId: 'onlypans-frontend',
+        });
+    }
+    return keycloakInstance;
+}

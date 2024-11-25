@@ -1,14 +1,13 @@
-import './App.css';
-import ResponsiveAppBar from "./components/appbar";
-import CreatePost from "./components/createpost";
-import PostCard from "./components/post";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { KeycloakContext } from './components/KeyCloakContext';
 import axios from 'axios';
-import keycloak from "./keycloak";
+import './App.css';
+import ResponsiveAppBar from './components/appbar';
+import CreatePost from './components/createpost';
+import PostCard from './components/post';
 
 function App() {
-    const [authenticated, setAuthenticated] = useState(false);
-    const [initialized, setInitialized] = useState(false);
+    const { keycloak, authenticated, initialized } = useContext(KeycloakContext);
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [posts, setPosts] = useState([]);
 
@@ -17,17 +16,17 @@ function App() {
     };
 
     const handlePostCreate = (newPost) => {
-        alert("Post created successfully!");
+        alert('Post created successfully!');
         setPosts((prevPosts) => [newPost, ...prevPosts]);
     };
 
     const fetchPosts = async () => {
-        if (authenticated) {
+        if (keycloak && keycloak.authenticated) {
             try {
-                const response = await axios.get('http://localhost:8082/posts', {
+                const response = await axios.get('http://localhost:8080/posts/', {
                     headers: {
-                        Authorization: `Bearer ${keycloak.token}`
-                    }
+                        Authorization: `Bearer ${keycloak.token}`,
+                    },
                 });
                 setPosts(response.data);
             } catch (error) {
@@ -37,53 +36,28 @@ function App() {
     };
 
     useEffect(() => {
-        const initKeycloak = async () => {
-            if (initialized) return;
-
-            try {
-                await keycloak.init({
-                    onLoad: 'check-sso',
-                    checkLoginIframe: true,
-                    pkceMethod: 'S256',
-                    flow: 'standard'
-                });
-                console.log(keycloak)
-
-                if (keycloak.authenticated) {
-                    setAuthenticated(true);
-                    setInitialized(true);
-                } else {
-                    // keycloak.login();
-                }
-            } catch (error) {
-                console.error("Keycloak initialization failed:", error);
-                setInitialized(true);
-            }
-        };
-
-        initKeycloak();
-    }, [initialized]);
-
-    useEffect(() => {
-        if (initialized && authenticated) {
+        if (authenticated) {
             fetchPosts();
         }
-    }, [initialized, authenticated]);
+    }, [authenticated]);
 
-    // Render loading or redirect to login if not authenticated
     if (!initialized) {
         return <div>Loading...</div>;
     }
 
-    if (!authenticated && keycloak && initialized) {
-        // keycloak.login();
+    if (!authenticated) {
+        keycloak.login();
         return <div>Redirecting to login...</div>;
     }
 
     return (
         <div>
             <ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost} />
-            <CreatePost open={showCreatePost} onClose={handleToggleCreatePost} onPostCreate={handlePostCreate} />
+            <CreatePost
+                open={showCreatePost}
+                onClose={handleToggleCreatePost}
+                onPostCreate={handlePostCreate}
+            />
 
             <div style={styles.scrollableContainer}>
                 {posts.map((post) => (
