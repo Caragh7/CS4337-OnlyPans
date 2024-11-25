@@ -1,4 +1,3 @@
-// src/KeycloakContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import Keycloak from 'keycloak-js';
 

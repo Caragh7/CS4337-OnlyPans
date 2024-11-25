@@ -1,4 +1,3 @@
-// src/keycloak.js
 import Keycloak from 'keycloak-js';
 
 let keycloakInstance;
