@@ -27,26 +27,28 @@ function CreatePost({ open, onClose }) {
             return;
         }
 
+
+        console.log("Requesting presigned URL")
         try {
-            // Requesting the presigned URL from postService
             const fileName = image.name;
-            console.log(`Requesting presigned URL for: ${fileName}`);
-            const { data: postResponse } = await axios.post('http://localhost:8082/posts', {
-                contentDescription: content,
-                authorName: 'someone' // we will set this dynamically once we have user/creator service ready
-            }, {
+            const { data: presignedUrl } = await axios.get('http://localhost:8080/media/presigned-url', {
                 params: { fileName }
             });
 
-            // Extracting the presigned URL for upload
-            const presignedUrl = postResponse.mediaUrl;
-
-            // Uploading the image using the presigned URL
             await axios.put(presignedUrl, image, {
                 headers: {
                     'Content-Type': image.type
                 }
             });
+
+            const postContent = {
+                contentDescription: content,
+                authorName: 'someone',
+                mediaUrl: fileName
+            };
+
+            const { data: createdPost } = await axios.post('http://localhost:8080/posts', postContent);
+            console.log("Created Post:", createdPost);
 
             setContent('');
             setImage(null);
@@ -59,6 +61,7 @@ function CreatePost({ open, onClose }) {
             alert('There was an error creating the post.');
         }
     };
+
 
     const handleCloseSuccess = () => {
         setSuccessOpen(false);

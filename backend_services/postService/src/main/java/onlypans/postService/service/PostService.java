@@ -8,6 +8,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
 
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -23,11 +24,16 @@ public class PostService {
     private String mediaServiceUrl;
 
 
-    public Post createPost(Post post, String fileName) {
-        String presignedUrl = restTemplate.getForObject(mediaServiceUrl + "/presigned-url?fileName=" + fileName, String.class);
-        post.setMediaUrl(presignedUrl);
+    public Post createPost(Post post, String mediaUrl) {
+
+        String imageUrl = ("https://cdn-api.kobos.io/onlypans-content/" + mediaUrl);
+
+        post.setMediaUrl(imageUrl);
         return postRepository.save(post);
     }
+
+
+
 
     public Optional<Post> getPostById(Long id) {
         return postRepository.findById(id);

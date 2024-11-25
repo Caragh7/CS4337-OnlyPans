@@ -89,6 +89,34 @@ services:
     networks:
       - backend
 
+  post-service:
+    image: openjdk:21
+    container_name: post-service
+    volumes:
+      - ./backend_services/postService/build/libs/postService-1.0.0.jar:/app/service.jar
+    command: ["java", "-jar", "/app/service.jar"]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/post_service.env
+    networks:
+      - backend
+
+  media-service:
+    image: openjdk:21
+    container_name: media-service
+    volumes:
+      - ./backend_services/mediaService/build/libs/mediaService-1.0.0.jar:/app/service.jar
+    command: [ "java", "-jar", "/app/service.jar" ]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/media_service.env
+    networks:
+      - backend
+
 
 networks:
   backend:
