@@ -5,13 +5,26 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
-    command: start-dev
+    command: start-dev --import-realm --hostname keycloak --http-port 8081
     env_file:
       - ./configs/keycloak.env
+    volumes:
+      - ./configs/keycloak:/opt/keycloak/data/import
     ports:
-      - 8081:8080
+      - 8081:8081
+      - 9000:9000
     networks:
       - backend
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'exec 3<>/dev/tcp/localhost/8081; echo -e "GET /health/ready HTTP/1.1\nhost: localhost:8080\n" >&3; timeout --preserve-status 1 cat <&3 | grep -m 1 status | grep -m 1 UP; ERROR=$?; exec 3<&-; exec 3>&-; exit $ERROR'
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # Consul service
   consul:
@@ -65,14 +78,17 @@ services:
       - ./api_gateway/build/libs/api_gateway-1.0.0.jar:/app/service.jar
     command: ["java", "-jar", "/app/service.jar"]
     depends_on:
-      - consul
-      - keycloak
+      keycloak:
+        condition: service_healthy
+      consul:
+        condition: service_started
     env_file:
       - ./configs/gateway.env
     ports:
       - 8080:8080
     networks:
       - backend
+
 
 networks:
   backend:
