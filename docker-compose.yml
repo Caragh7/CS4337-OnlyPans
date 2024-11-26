@@ -5,7 +5,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
-    command: start-dev --import-realm --hostname keycloak --http-port 8081
+    command: start-dev --import-realm --hostname localhost --http-port 8081
     env_file:
       - ./configs/keycloak.env
     volumes:
