@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +29,9 @@ public class SubscriptionController {
     }
 
     @GetMapping("/payment/{otherUserId}")
-    public String createSession(@PathVariable String otherUserId) throws Exception {
+    public String createSession(@PathVariable String otherUserId, Authentication authentication) throws Exception {
+        String userId = authentication.getName();
+        System.out.println("Subscription pending for: " + userId);
         Session createCheckoutSession = subscriptionService.createCheckoutSession("ubdsbds23", otherUserId, "2");
         return createCheckoutSession.getId();
     }
