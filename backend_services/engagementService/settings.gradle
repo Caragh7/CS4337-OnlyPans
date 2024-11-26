@@ -1,0 +1,4 @@
+rootProject.name = 'engagementService'
+
+include 'backend_services:common'
+include 'backend_services:GlobalExceptions'
