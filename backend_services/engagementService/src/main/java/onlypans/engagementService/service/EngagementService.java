@@ -22,6 +22,12 @@ public class EngagementService {
         if (postId == null || userId == null) {
             throw new IllegalArgumentException("postId and userId must not be null");
         }
+
+        boolean alreadyLiked = likeRepository.existsByPostIdAndUserId(postId, userId);
+        if (alreadyLiked) {
+            throw new IllegalStateException("User has already liked this post");
+        }
+
         Likes like = new Likes();
         like.setPostId(postId);
         like.setUserId(userId);
@@ -29,8 +35,12 @@ public class EngagementService {
     }
 
     public void removeLike(Long postId, Long userId) {
-        likeRepository.deleteAll(likeRepository.findByPostId(postId));
+        if (postId == null || userId == null) {
+            throw new IllegalArgumentException("postId and userId cannot be null");
+        }
+        likeRepository.deleteByPostIdAndUserId(postId, userId);
     }
+
 
     public int getLikeCount(Long postId) {
         return likeRepository.countByPostId(postId);

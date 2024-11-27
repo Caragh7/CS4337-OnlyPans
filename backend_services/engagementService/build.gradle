@@ -5,6 +5,8 @@ plugins {
 }
 
 
+
+
 group = 'org.onlypans'
 version = '1.0.0'
 
@@ -45,7 +47,6 @@ dependencyManagement {
 tasks.withType(Test) {
     useJUnitPlatform()
 }
-
 
 bootJar {
     enabled = true
