@@ -128,8 +128,6 @@ services:
       - api-gateway
     env_file:
       - ./configs/creator_service.env
-    ports:
-      - 8085:8080 # change this??
     networks:
       - backend
 
