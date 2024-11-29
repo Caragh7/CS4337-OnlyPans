@@ -5,11 +5,18 @@ import './App.css';
 import ResponsiveAppBar from './components/appbar';
 import CreatePost from './components/createpost';
 import PostCard from './components/post';
+import useEnsureUserProfile from "./hooks/useEnsureUserProfile";
 
 function App() {
     const { keycloak, authenticated, initialized } = useContext(KeycloakContext);
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [posts, setPosts] = useState([]);
+
+// checking if a user profile exists for the current logged-in user, and if not we make one!
+    const { user, loading, error } = useEnsureUserProfile(
+        keycloak?.token,
+        authenticated
+    );
 
     const handleToggleCreatePost = () => {
         setShowCreatePost((prev) => !prev);
@@ -35,11 +42,12 @@ function App() {
         }
     };
 
-    useEffect(() => {
-        if (authenticated) {
-            fetchPosts();
-        }
-    }, [authenticated]);
+
+    // useEffect(() => {
+    //     if (authenticated) {
+    //         fetchPosts();
+    //     }
+    // }, [authenticated]);
 
     if (!initialized) {
         return <div>Loading...</div>;
@@ -50,19 +58,32 @@ function App() {
         return <div>Redirecting to login...</div>;
     }
 
+    // user profile checks!
+    if (loading) {
+        return <div>Ensuring user profile...</div>
+    }
+
+    if (error) {
+        return <div>Error ensuring user profile : {error.message}</div>
+    }
+
     return (
         <div>
-            <ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost} />
-            <CreatePost
-                open={showCreatePost}
-                onClose={handleToggleCreatePost}
-                onPostCreate={handlePostCreate}
-            />
+            {/*<ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost} />*/}
+            {/*<CreatePost*/}
+            {/*    open={showCreatePost}*/}
+            {/*    onClose={handleToggleCreatePost}*/}
+            {/*    onPostCreate={handlePostCreate}*/}
+            {/*/>*/}
 
-            <div style={styles.scrollableContainer}>
-                {posts.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                ))}
+            {/*<div style={styles.scrollableContainer}>*/}
+            {/*    {posts.map((post) => (*/}
+            {/*        <PostCard key={post.id} post={post} />*/}
+            {/*    ))}*/}
+            {/*</div>*/}
+            <div>
+                <h1>Welcome, {user?.firstName || "User"}</h1>
+                <p>dis ur email: {user?.email}</p>
             </div>
         </div>
     );

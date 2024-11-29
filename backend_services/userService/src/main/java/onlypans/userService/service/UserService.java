@@ -1,5 +1,6 @@
 package onlypans.userService.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import onlypans.common.dtos.CreatorProfileRequest;
 import onlypans.common.exceptions.*;
 import onlypans.userService.entity.Account;
@@ -48,6 +49,12 @@ public class UserService {
         } catch (Exception e) {
             throw new ResourceNotFoundException("Unable to find User with ID " + id);
         }
+    }
+
+    public User getUserByEmail(String email) {
+        System.out.println("Received email: " + email);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
     }
 
     public List<User> getAllUsers() {
