@@ -1,14 +1,18 @@
 package onlypans.userService.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import onlypans.common.dtos.CreatorProfileRequest;
 import onlypans.common.exceptions.*;
 import onlypans.userService.entity.Account;
 import onlypans.userService.entity.User;
 import onlypans.userService.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpHeaders;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +21,9 @@ import java.util.Optional;
 public class UserService {
 
     private RestTemplate restTemplate;
+    @Autowired
+    private HttpServletRequest httpServletRequest;
+
     public UserService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -68,9 +75,13 @@ public class UserService {
     public User updateUser(Long id, User userDetails) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with ID " + id));
         user.setUsername(userDetails.getUsername());
+        user.setFirstName(userDetails.getFirstName());
+        user.setLastName(userDetails.getLastName());
         user.setEmail(userDetails.getEmail());
         user.setPassword(userDetails.getPassword());
+
         return userRepository.save(user);
+
     }
 
 
@@ -87,10 +98,16 @@ public class UserService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+        String authToken = httpServletRequest.getHeader("Authorization");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authToken);
 
             // Call CreatorService to create a creator profile using REST API
             String creatorServiceUrl = "http://creator-service/creator-profiles/create";
-            restTemplate.postForObject(creatorServiceUrl, request, String.class);
+
+            HttpEntity<CreatorProfileRequest> entity = new HttpEntity<>(request, headers);
+            restTemplate.postForObject(creatorServiceUrl, entity, String.class);
         }
 
 }

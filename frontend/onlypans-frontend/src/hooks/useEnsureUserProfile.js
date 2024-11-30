@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {jwtDecode} from "jwt-decode";
-import { getUserByEmail, createUser } from "../services/UserService";
+import { getUserByEmail, createUser } from "../api/UserServiceApi";
 
 const extractUserDetailsFromToken = (token) => {
     const decoded = jwtDecode(token);

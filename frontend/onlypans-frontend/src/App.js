@@ -6,11 +6,22 @@ import ResponsiveAppBar from './components/appbar';
 import CreatePost from './components/createpost';
 import PostCard from './components/post';
 import useEnsureUserProfile from "./hooks/useEnsureUserProfile";
+import UserProfile from "./components/UserService/UserProfile";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from "./pages/HomePage";
+import AllPostsPage from "./pages/AllPostsPage";
+import UpgradeToCreatorProfile from "./pages/UpgradeToCreatorPage";
+
+
 
 function App() {
     const { keycloak, authenticated, initialized } = useContext(KeycloakContext);
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [posts, setPosts] = useState([]);
+
+    // page placeholders
+    const Page1 = () => <h1>Page 1</h1>;
+    const Page3 = () => <h1>Page 3</h1>;
 
 // checking if a user profile exists for the current logged-in user, and if not we make one!
     const { user, loading, error } = useEnsureUserProfile(
@@ -43,11 +54,11 @@ function App() {
     };
 
 
-    // useEffect(() => {
-    //     if (authenticated) {
-    //         fetchPosts();
-    //     }
-    // }, [authenticated]);
+    useEffect(() => {
+        if (authenticated) {
+            fetchPosts();
+        }
+    }, [authenticated]);
 
     if (!initialized) {
         return <div>Loading...</div>;
@@ -66,41 +77,72 @@ function App() {
     if (error) {
         return <div>Error ensuring user profile : {error.message}</div>
     }
-
+// basic return that works!
+//     return (
+//
+//         <div>
+//         <ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost} />
+//         <CreatePost
+//             open={showCreatePost}
+//             onClose={handleToggleCreatePost}
+//             onPostCreate={handlePostCreate}
+//         />
+//
+//         <div style={styles.scrollableContainer}>
+//             {posts.map((post) => (
+//                 <PostCard key={post.id} post={post} />
+//             ))}
+//         </div>
+//         <div>
+//             <h1>Welcome, {user?.firstName || "User"}</h1>
+//             <p>dis ur email: {user?.email}</p>
+//             {/* Pass data as props to UserProfile */}
+//             <UserProfile
+//                 keycloak={keycloak}
+//                 authenticated={authenticated}
+//                 user={user}
+//             />
+//         </div>
+//     </div>
+//
+// );
     return (
-        <div>
-            {/*<ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost} />*/}
-            {/*<CreatePost*/}
-            {/*    open={showCreatePost}*/}
-            {/*    onClose={handleToggleCreatePost}*/}
-            {/*    onPostCreate={handlePostCreate}*/}
-            {/*/>*/}
+        <Router>
+            <ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost} />
+            <Routes>
+                <Route
+                    path="/profile"
+                    element={<UserProfile keycloak={keycloak} authenticated={authenticated} user={user} />}
+                />
+                <Route
+                    path="/upgrade"
+                    element={<UpgradeToCreatorProfile keycloak={keycloak} user={user} authenticated={authenticated} />}
+                />
+                {/* all posts from db made by marty */}
+                <Route
+                    path="/allPosts"
+                    element={
+                        <div>
+                            <AllPostsPage
+                                posts={posts}
+                                showCreatePost={showCreatePost}
+                                handlePostCreate={handlePostCreate}
+                                handleToggleCreatePost={handleToggleCreatePost}
+                            />
+                        </div>
+                    }
+                />
+                {/* Main page with buttons */}
+                <Route path="/" element={<HomePage />} />
 
-            {/*<div style={styles.scrollableContainer}>*/}
-            {/*    {posts.map((post) => (*/}
-            {/*        <PostCard key={post.id} post={post} />*/}
-            {/*    ))}*/}
-            {/*</div>*/}
-            <div>
-                <h1>Welcome, {user?.firstName || "User"}</h1>
-                <p>dis ur email: {user?.email}</p>
-            </div>
-        </div>
+                {/* Placeholder routes for the other pages */}
+                <Route path="/page1" element={<Page1 />} />
+                <Route path="/allPosts" element={<AllPostsPage />} />
+                <Route path="/page3" element={<Page3 />} />
+            </Routes>
+        </Router>
     );
 }
 
-const styles = {
-    scrollableContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        padding: '20px',
-        height: '100%',
-        overflowY: 'scroll',
-        scrollbarWidth: 'thin',
-        gap: '20px',
-    },
-};
 
 export default App;

@@ -13,13 +13,26 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import logo from '../assets/textOnly.png';
 import user from '../assets/user.png';
+import {useNavigate} from "react-router-dom";
+import {useContext} from "react";
+import {KeycloakContext} from "./KeyCloakContext";
+
+
 
 const pages = ['']; // Placeholder
-const settings = ['Profile', 'Logout'];
+const settings = ['Profile', 'Logout', 'Upgrade'];
 
 function ResponsiveAppBar({ onToggleCreatePost }) {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const { keycloak } = useContext(KeycloakContext);
+    const navigate = useNavigate();
+
+
+    const handleProfileClick = () => {
+        handleCloseUserMenu(); // Close the dropdown
+        navigate('/profile'); // Navigate to the UserProfile route
+    };
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -70,7 +83,7 @@ function ResponsiveAppBar({ onToggleCreatePost }) {
                             <MenuIcon />
                         </IconButton>
                         <Menu
-                            id="menu-appbar"
+                            id="nav-menu-appbar"
                             anchorEl={anchorElNav}
                             anchorOrigin={{
                                 vertical: 'bottom',
@@ -83,6 +96,8 @@ function ResponsiveAppBar({ onToggleCreatePost }) {
                             }}
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
+                            disableAutoFocus // prevents focus conflicts
+                            disableRestoreFocus // prevents restoring focus to a hidden element in menu?
                             sx={{ display: { xs: 'block', md: 'none' } }}
                         >
                             {pages.map((page) => (
@@ -117,7 +132,7 @@ function ResponsiveAppBar({ onToggleCreatePost }) {
                         </Tooltip>
                         <Menu
                             sx={{ mt: '45px' }}
-                            id="menu-appbar"
+                            id="settings-menu-appbar"
                             anchorEl={anchorElUser}
                             anchorOrigin={{
                                 vertical: 'top',
@@ -132,7 +147,19 @@ function ResponsiveAppBar({ onToggleCreatePost }) {
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                <MenuItem
+                                    key={setting}
+                                    onClick={() => {
+                                        handleCloseUserMenu();
+                                        if (setting === 'Profile'){
+                                        handleProfileClick();
+                                        } else if ( setting === 'Logout') {
+                                            keycloak.logout();
+                                        } else if (setting === 'Upgrade') {
+                                            navigate('/upgrade')
+                                        }
+                                    }}
+                                    >
                                     <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
                                 </MenuItem>
                             ))}
