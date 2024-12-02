@@ -30,7 +30,13 @@ public class CreatorProfileService {
             throw new UnableToCreateResourceException("Unable to create Creator Profile", e);
         }
     }
-
+    public List<CreatorProfile> getAllCreators() {
+        try {
+            return creatorProfileRepository.findAll();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Unable to find all Creator Profiles");
+        }
+    }
     public Optional<CreatorProfile> getCreatorProfileById(Long id) {
         try {
             return creatorProfileRepository.findById(id);

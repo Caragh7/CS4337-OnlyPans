@@ -22,6 +22,10 @@ public class CreatorProfileController {
     public CreatorProfileController(CreatorProfileService creatorProfileService) {
         this.creatorProfileService = creatorProfileService;
     }
+    @GetMapping
+    public List<CreatorProfile> getAllCreatorProfiles() {
+        return  creatorProfileService.getAllCreators();
+    }
 
     @PostMapping("/create")
     public ResponseEntity<CreatorProfile> createCreatorProfile(@RequestBody CreatorProfileRequest request) {
