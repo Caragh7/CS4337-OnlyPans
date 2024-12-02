@@ -15,6 +15,8 @@ public class CreatorProfile {
     private Long userId; // Foreign key to User entity, how to connect these??
     private String firstName;
     private String lastName;
+    private String stripePriceId;
+    private Float revenue;
 
 
     // Default constructor
@@ -38,6 +40,14 @@ public class CreatorProfile {
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
+
+    public String getStripePriceId() { return stripePriceId; }
+    public void setStripePriceId(String stripePriceId) {
+        this.stripePriceId = stripePriceId;
+    }
+
+    public Float getRevenue() { return revenue; }
+    public void setRevenue(Float revenue) { this.revenue = revenue; }
 
 }
 

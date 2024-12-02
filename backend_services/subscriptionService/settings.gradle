@@ -1,1 +1,3 @@
 rootProject.name = 'subscriptionService'
+
+include "backend_services:userService"
