@@ -6,6 +6,7 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Product;
 import com.stripe.model.StripeCollection;
 import com.stripe.model.checkout.Session;
+import onlypans.subscriptionService.entity.Subscription;
 import onlypans.subscriptionService.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,18 +21,23 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/subscriptions")
 public class SubscriptionController {
+    private final SubscriptionService subscriptionService;
+
     @Autowired
-    private SubscriptionService subscriptionService;
+    public SubscriptionController(SubscriptionService subscriptionService) {
+        this.subscriptionService = subscriptionService;
+    }
 
     @GetMapping("/test")
     public String sendTest() throws StripeException {
         return "Test";
     }
 
-    @GetMapping("/payment/{otherUserId}")
+    @GetMapping("/subscribe/{otherUserId}")
     public String createSession(@PathVariable String otherUserId, Authentication authentication) throws Exception {
         String userId = authentication.getName();
-        System.out.println("Subscription pending for: " + userId);
+        List<Subscription> subscriptions = subscriptionService.getUserSubscriptions(userId);
+        System.out.println("Subscription pending for: " + userId + " length: " + subscriptions.size());
         Session createCheckoutSession = subscriptionService.createCheckoutSession("ubdsbds23", otherUserId, "2");
         return createCheckoutSession.getId();
     }
