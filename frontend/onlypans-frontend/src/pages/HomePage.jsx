@@ -9,7 +9,7 @@ const HomePage = () => {
     const buttons = [
         { name: "Your Feed", path: "/page1", backgroundImage: "url('/yourfeed.jpg')" },
         { name: "All Posts", path: "/allPosts", backgroundImage: "url('/allposts.jpg')" },
-        { name: "Creators", path: "/page3", backgroundImage: "url('/creators.jpg')" },
+        { name: "Creators", path: "/creators", backgroundImage: "url('/creators.jpg')" },
     ];
 
     const [hoverIndex, setHoverIndex] = useState(null);
@@ -32,31 +32,54 @@ const HomePage = () => {
                     onMouseEnter={() => setHoverIndex(index)}
                     onMouseLeave={() => setHoverIndex(null)}
                     style={{
-                        flex: "0 1 auto",
-                        height: "30%",
-                        width: "80%",
-                        margin: "0 auto",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        fontSize: "24px",
-                        fontWeight: "bold",
-                        color: "#fff",
-                        textShadow: "1px 1px 2px rgba(0, 0, 0, 0.7)",
-                        backgroundImage: button.backgroundImage,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        border: "none",
-                        outline: "none",
-                        cursor: "pointer",
-                        borderRadius: "15px",
-                        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    position: "relative", // Position relative to contain child layers
+                    flex: "0 1 auto",
+                    height: "30%",
+                    width: "80%",
+                    margin: "0 auto",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontSize: "24px",
+                    fontWeight: "bold",
+                    color: "#fff",
+                    textShadow: "1px 1px 2px rgba(0, 0, 0, 0.7)",
+                    border: "none",
+                    outline: "none",
+                    cursor: "pointer",
+                    borderRadius: "15px",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    overflow: "hidden",
                         transition: "transform 0.3s ease-in-out",
                         transform: hoverIndex === index ? "scale(1.05)" : "scale(1)",
-
-                    }}
+                }}
                 >
-                    {button.name}
+                    {/* background layer */}
+                    <div
+                        style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundImage: button.backgroundImage,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            filter: "blur(3px)",
+                            zIndex: 0,
+
+                        }}
+                    ></div>
+                    {/* text layer */}
+                    <span
+                        style={{
+                            position: "relative",
+                            zIndex: 1,
+                        }}
+                    >
+        {button.name}
+    </span>
+
                 </button>
             ))}
         </div>

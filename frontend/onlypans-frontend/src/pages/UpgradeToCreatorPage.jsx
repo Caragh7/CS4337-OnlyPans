@@ -1,22 +1,40 @@
 
 
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {upgradeToCreatorProfileReq} from "../api/UserServiceApi";
-import {deleteCreatorProfile} from "../api/CreatorServiceApi";
+import {deleteCreatorProfile, fetchCreatorByUserId} from "../api/CreatorServiceApi";
 
 const UpgradeToCreatorProfile = ({keycloak, authenticated, user}) => {
     const [status, setStatus] = useState("");
     const [isCreator, setIsCreator] = useState(false);
 
-    if (!authenticated) {
-        console.error("User is not authenticated");
-        return <div>You must be logged in to view this page.</div>;
-    }
-    // put in a get request here to see if the user already has a creator profile...
+    const token = keycloak?.token;
+
+
+    useEffect(() => {
+        const checkCreatorStatus = async () => {
+            try {
+                const creatorProfile = await fetchCreatorByUserId(user.id, token);
+                setIsCreator(!!creatorProfile); // setting isCreator to true if a profile exists
+            } catch (error) {
+                if (error.response?.status === 404) {
+                    setIsCreator(false); // no creator profile found
+                } else {
+                    console.error("Error checking creator status:", error);
+                }
+            }
+        };
+        if (authenticated && user) {
+            checkCreatorStatus();
+        } else {
+            console.error("User is not authenticated");
+            return <div>You must be logged in to view this page.</div>;
+        }
+    }, [authenticated, user, token]);
+
 
     const handleToggleCreatorStatus = async () => {
-        const token = keycloak?.token;
             if (isCreator) {
                 // calling creator service to delete the creator profile
                 try {

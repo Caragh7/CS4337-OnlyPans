@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/by-email")
-    public ResponseEntity<User>getUserByEmail(@RequestParam String email) {
+    public ResponseEntity<User> getUserByEmail(@RequestParam String email) {
         System.out.println("Received email: " + email);
         try {
             User user = userService.getUserByEmail(email);
@@ -63,10 +63,24 @@ public class UserController {
     public ResponseEntity<String> upgradeToCreatorProfile(
             @PathVariable Long userId,
             @RequestBody CreatorProfileRequest request) {
-        request.setUserId(userId);
 
-        userService.upgradeToCreatorProfile(request);
-        return ResponseEntity.ok("User upgraded to creator profile");
+        Optional<User> optionalUser = userService.getUserById(userId);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+
+            request.setUserId(userId);
+            request.setFirstName(user.getFirstName());
+            request.setLastName(user.getLastName());
+            userService.upgradeToCreatorProfile(request);
+            return ResponseEntity.ok("User upgraded to creator profile");
+        } else {
+            // Handle the case where the user is not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User not found");
+        }
     }
 }
+
 

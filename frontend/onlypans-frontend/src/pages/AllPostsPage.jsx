@@ -1,8 +1,9 @@
 
 
-import React from "react";
+import React, {useEffect, useState} from "react";
 import PostCard from "../components/post";
 import CreatePost from "../components/createpost";
+import {fetchPosts} from "../api/PostServiceApi"
 
 const styles = {
     scrollableContainer: {
@@ -17,7 +18,35 @@ const styles = {
         gap: '20px',
     },
 };
-const AllPostsPage = ({ posts, showCreatePost, handleToggleCreatePost, handlePostCreate }) => {
+
+
+const AllPostsPage = ({keycloak, authenticated, user, showCreatePost, handleToggleCreatePost}) => {
+    const [posts, setPosts] = useState([]);
+
+    const handlePostCreate = (newPost) => {
+        alert('Post created successfully!');
+        setPosts((prevPosts) => [newPost, ...prevPosts]);
+    };
+
+    const token = keycloak?.token;
+
+    useEffect(() => {
+        const loadPosts = async () => {
+            if (token) {
+                try {
+                    const fetchedPosts = await fetchPosts(token);
+                    setPosts(fetchedPosts);
+                } catch (error) {
+                    console.error("Error fetching posts:", error);
+                    setPosts([]); // Fallback to an empty array
+                }
+            }
+        };
+
+        loadPosts();
+    }, [token]);
+
+
     return (
         <div>
             <div>
@@ -28,9 +57,11 @@ const AllPostsPage = ({ posts, showCreatePost, handleToggleCreatePost, handlePos
                 />
             </div>
             <div style={styles.scrollableContainer}>
-                {posts.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                ))}
+                {Array.isArray(posts) ? (
+                    posts.map((post) => <PostCard key={post.id} post={post} />)
+                ) : (
+                    <p>No posts available</p>
+                )}
             </div>
         </div>
     );
