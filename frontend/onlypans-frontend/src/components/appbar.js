@@ -13,13 +13,28 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import logo from '../assets/textOnly.png';
 import user from '../assets/user.png';
+import HomeIcon from "@mui/icons-material/Home";
+import { Link } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import {useContext} from "react";
+import {KeycloakContext} from "./KeyCloakContext";
+
+
 
 const pages = ['']; // Placeholder
-const settings = ['Profile', 'Logout'];
+const settings = ['Profile', 'Logout', 'Upgrade'];
 
 function ResponsiveAppBar({ onToggleCreatePost }) {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const { keycloak } = useContext(KeycloakContext);
+    const navigate = useNavigate();
+
+
+    const handleProfileClick = () => {
+        handleCloseUserMenu(); // Close the dropdown
+        navigate('/profile'); // Navigate to the UserProfile route
+    };
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -40,37 +55,68 @@ function ResponsiveAppBar({ onToggleCreatePost }) {
         <AppBar position="static" sx={{ backgroundColor: '#fff' }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
+                    <Box
                         sx={{
-                            mr: 2,
-                            display: { xs: 'none', md: 'flex' },
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
+                            display: "flex",
+                            alignItems: "center",
+                            flexGrow: 1,
+                            justifyContent: "flex-start",
                         }}
                     >
-                        <img src={logo} alt="OnlyPans" style={{ height: '40px' }} />
-                    </Typography>
+                        <img
+                            src={logo}
+                            alt="OnlyPans"
+                            style={{ height: "40px", marginRight: "10px" }}
+                        />
+
+                        {/* Home Button */}
+                        <IconButton
+                            component={Link}
+                            to="/" // navigate to homepage
+                            sx={{
+                                color: "#007BFF",
+                                backgroundColor: "white",
+                                borderRadius: "50%",
+                                padding: "5px",
+                                "&:hover": {
+                                    backgroundColor: "#0056b3",
+                                    color: "white",
+                                },
+                            }}
+                        >
+                            <HomeIcon />
+                        </IconButton>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="a"
+                            href="#app-bar-with-responsive-menu"
+                            sx={{
+                                display: { xs: "none", md: "flex" }, // Hide text on small screens
+                                fontFamily: "monospace",
+                                fontWeight: 700,
+                                letterSpacing: ".3rem",
+                                color: "inherit",
+                                textDecoration: "none",
+                            }}
+                        >
+                            OnlyPans
+                        </Typography>
+                    </Box>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                        >
+                        {/*<IconButton*/}
+                        {/*    size="large"*/}
+                        {/*    aria-label="account of current user"*/}
+                        {/*    aria-controls="menu-appbar"*/}
+                        {/*    aria-haspopup="true"*/}
+                        {/*    onClick={handleOpenNavMenu}*/}
+                        {/*    color="inherit"*/}
+                        {/*>*/}
                             <MenuIcon />
-                        </IconButton>
+                        {/*</IconButton>*/}
                         <Menu
-                            id="menu-appbar"
+                            id="nav-menu-appbar"
                             anchorEl={anchorElNav}
                             anchorOrigin={{
                                 vertical: 'bottom',
@@ -83,6 +129,8 @@ function ResponsiveAppBar({ onToggleCreatePost }) {
                             }}
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
+                            disableAutoFocus // prevents focus conflicts
+                            disableRestoreFocus // prevents restoring focus to a hidden element in menu?
                             sx={{ display: { xs: 'block', md: 'none' } }}
                         >
                             {pages.map((page) => (
@@ -117,7 +165,7 @@ function ResponsiveAppBar({ onToggleCreatePost }) {
                         </Tooltip>
                         <Menu
                             sx={{ mt: '45px' }}
-                            id="menu-appbar"
+                            id="settings-menu-appbar"
                             anchorEl={anchorElUser}
                             anchorOrigin={{
                                 vertical: 'top',
@@ -132,7 +180,19 @@ function ResponsiveAppBar({ onToggleCreatePost }) {
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                <MenuItem
+                                    key={setting}
+                                    onClick={() => {
+                                        handleCloseUserMenu();
+                                        if (setting === 'Profile'){
+                                        handleProfileClick();
+                                        } else if ( setting === 'Logout') {
+                                            keycloak.logout();
+                                        } else if (setting === 'Upgrade') {
+                                            navigate('/upgrade')
+                                        }
+                                    }}
+                                    >
                                     <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
                                 </MenuItem>
                             ))}

@@ -117,6 +117,20 @@ services:
     networks:
       - backend
 
+  creator-service:
+    image: openjdk:21
+    container_name: creator-service
+    volumes:
+      - ./backend_services/creatorService/build/libs/creatorService-1.0.0.jar:/app/service.jar
+    command: [ "java", "-jar", "/app/service.jar" ]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/creator_service.env
+    networks:
+      - backend
+
 
 networks:
   backend:
