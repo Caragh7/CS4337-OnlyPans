@@ -31,17 +31,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private AccountService accountService;
-
-
-
     public User createUser(User user) {
         try {
             userRepository.save(user);
-            Account account = new Account();
-            account.setUser(user);
-            accountService.createAccount(account);
             return userRepository.save(user);
 
         } catch (Exception e) {

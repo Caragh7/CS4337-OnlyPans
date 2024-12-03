@@ -28,10 +28,6 @@ public class User {
 
     private String stripe_Id;
 
-    @OneToOne(mappedBy = "user")
-    private Account account;
-
-
     // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
