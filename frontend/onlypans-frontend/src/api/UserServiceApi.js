@@ -1,26 +1,21 @@
 import axios from "axios";
 
-
-
-// function to check if a user exists by email (email comes from token!)
-export const getUserByEmail = async (email, token) => {
+export const getUserById = async (id, token) => {
     try {
-        const response = await axios.get(`${process.env.REACT_APP_API_GATEWAY_URL}/users/by-email`, {
-            params: { email },
+        const response = await axios.get(`${process.env.REACT_APP_API_GATEWAY_URL}/users/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
-        return response.data; // returning user data if found (they already exists in db)
+        return response.data;
     } catch (error) {
         if (error.response?.status === 404) {
-            return null; // if user not found, means we need to make one!
+            return null;
         }
-        throw error; // propagate other errors from api call
+        throw error;
     }
 };
 
-// function to create a new user
 export const createUser = async (userData,  token) => {
     try {
         const response = await axios.post(`${process.env.REACT_APP_API_GATEWAY_URL}/users/create`, userData, {
@@ -28,7 +23,7 @@ export const createUser = async (userData,  token) => {
                 Authorization: `Bearer ${token}`,
             },
         });
-        return response.data; // returning new created user
+        return response.data;
     } catch (error) {
         console.error("Error creating user:", error.response || error.message || error);
         throw error;
@@ -65,18 +60,19 @@ export const deleteUser = async (userId, token) => {
         throw error;
     }
 };
-// Function to upgrade a user to a creator profile
-export const upgradeToCreatorProfileReq = async (userId, token) => {
+export const upgradeToCreatorProfileReq = async (userId, token, price) => {
     try {
-        const response = await axios.post(`${process.env.REACT_APP_API_GATEWAY_URL}/users/${userId}/upgrade`,{},{
+        const response = await axios.post(`${process.env.REACT_APP_API_GATEWAY_URL}/users/upgrade`,{
+            price: price.toString()
+        },{
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
-        return response.data; // Return success message or other data
+        return response.data;
     } catch (error) {
         console.error("Error upgrading user to creator profile:", error);
-        throw error; // Re-throw error for the calling component to handle
+        throw error;
     }
 };
 

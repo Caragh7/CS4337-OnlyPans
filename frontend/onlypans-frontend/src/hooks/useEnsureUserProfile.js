@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {jwtDecode} from "jwt-decode";
-import { getUserByEmail, createUser } from "../api/UserServiceApi";
+import { getUserById, createUser } from "../api/UserServiceApi";
 
 const extractUserDetailsFromToken = (token) => {
     const decoded = jwtDecode(token);
@@ -9,7 +9,7 @@ const extractUserDetailsFromToken = (token) => {
         firstName: decoded.given_name || "",
         lastName: decoded.family_name || "",
         email: decoded.email || "",
-        keycloakId: decoded.sub, // unique Keycloak user id, idk if this should replace userID in the db :/
+        id: decoded.sub,
     };
 };
 
@@ -24,18 +24,16 @@ const useEnsureUserProfile = (token, authenticated) => {
 
             setLoading(true);
             try {
-                // extract user details from the token using decode function above
                 const userDetails = extractUserDetailsFromToken(token);
+                console.log(userDetails)
 
-                // checking if user exists in db
-                let user = await getUserByEmail(userDetails.email, token);
+                let user = await getUserById(userDetails.id, token);
 
-                // if user doesn't exist, then we create one
                 if (!user) {
                     user = await createUser(userDetails, token);
                 }
 
-                setUser(user); // save user data to state
+                setUser(user);
             } catch (err) {
                 setError(err);
             } finally {
