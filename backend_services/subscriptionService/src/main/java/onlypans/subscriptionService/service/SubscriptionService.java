@@ -10,6 +10,7 @@ import com.stripe.param.PriceCreateParams;
 import com.stripe.param.ProductCreateParams;
 import com.stripe.param.ProductRetrieveParams;
 import com.stripe.param.checkout.SessionCreateParams;
+import onlypans.common.dtos.CreateSubscriptionRequest;
 import onlypans.common.entity.User;
 import onlypans.subscriptionService.clients.CreatorServiceClient;
 import onlypans.subscriptionService.clients.UserServiceClient;
@@ -57,9 +58,9 @@ public class SubscriptionService {
         }
     }
 
-    public Session createCheckoutSession(String priceId, String userId, String subscriptionId) throws Exception {
-        if (!checkUserExists(userId)) {
-            throw new NoSuchElementException("User with ID " + userId + " does not exist.");
+    public Session createCheckoutSession(String priceId, CreateSubscriptionRequest request, Subscription subscription) throws Exception {
+        if (!checkUserExists(request.getUserId())) {
+            throw new NoSuchElementException("User with ID " + request.getUserId() + " does not exist.");
         }
 
         SessionCreateParams params = SessionCreateParams.builder()
@@ -68,10 +69,10 @@ public class SubscriptionService {
                         .setQuantity(1L)
                         .build())
                 .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
-                .setSuccessUrl("https://yourdomain.com/success?session_id={CHECKOUT_SESSION_ID}")
-                .setCancelUrl("https://yourdomain.com/cancel")
-                .putMetadata("userId", userId)
-                .putMetadata("subscriptionId", subscriptionId)
+                .setSuccessUrl(request.getFrom() + "/success?session_id={CHECKOUT_SESSION_ID}")
+                .setCancelUrl(request.getFrom() + "/")
+                .putMetadata("userId", request.getUserId())
+                .putMetadata("subscriptionId", String.valueOf(subscription.getId()))
                 .build();
 
         return Session.create(params);
@@ -101,6 +102,17 @@ public class SubscriptionService {
                 .build();
 
         return this.client.prices().create(priceParams);
+    }
+
+    public Subscription createSubscription(CreateSubscriptionRequest request, String userId, Long creatorId) {
+        Subscription subscription = new Subscription();
+        subscription.setState("PENDING");
+        subscription.setUserId(request.getUserId());
+        subscription.setUserId(userId);
+        subscription.setCreatorProfileId(creatorId);
+
+        subscriptionRepository.save(subscription);
+        return subscription;
     }
 
     public Optional<User> getUserById(String userId) {

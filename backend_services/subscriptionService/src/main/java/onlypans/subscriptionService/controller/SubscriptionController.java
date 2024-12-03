@@ -8,6 +8,7 @@ import com.stripe.model.Product;
 import com.stripe.model.StripeCollection;
 import com.stripe.model.checkout.Session;
 import onlypans.common.dtos.CreatePriceRequest;
+import onlypans.common.dtos.CreateSubscriptionRequest;
 import onlypans.common.entity.User;
 import onlypans.common.entity.CreatorProfile;
 import onlypans.subscriptionService.entity.Subscription;
@@ -42,18 +43,24 @@ public class SubscriptionController {
         return createdPrice.getId();
     }
 
-    @GetMapping("/subscribe/{otherUserId}")
-    public String createSession(@PathVariable String otherUserId, Authentication authentication) throws Exception {
+    @GetMapping("/test")
+    public String get() {
+        return "Test";
+    }
+
+    @PostMapping("/subscribe")
+    public String createSession(@RequestBody CreateSubscriptionRequest request, Authentication authentication) throws Exception {
         String userId = authentication.getName();
+        System.out.println(request.getUserId() + " " + request.getFrom());
         List<Subscription> subscriptions = subscriptionService.getUserSubscriptions(userId);
-        Optional<User> getCreator = subscriptionService.getUserById(otherUserId);
+        Optional<User> getCreator = subscriptionService.getUserById(request.getUserId());
         if(getCreator.isEmpty()) return "Error: User not found";
 
-        System.out.println(getCreator.get().getEmail());
-        Optional<CreatorProfile> creator = subscriptionService.getCreatorProfileByUserId(otherUserId);
+        Optional<CreatorProfile> creator = subscriptionService.getCreatorProfileByUserId(request.getUserId());
         if(creator.isEmpty()) return "Error: Creator not found";
 
-        Session createCheckoutSession = subscriptionService.createCheckoutSession(creator.get().getStripePriceId(), otherUserId, "2");
+        Subscription subscription = subscriptionService.createSubscription(request, userId, creator.get().getId());
+        Session createCheckoutSession = subscriptionService.createCheckoutSession(creator.get().getStripePriceId(), request, subscription);
         return createCheckoutSession.getId();
     }
 }

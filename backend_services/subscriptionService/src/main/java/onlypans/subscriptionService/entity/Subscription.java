@@ -18,12 +18,14 @@ public class Subscription {
     private String userId;
 
     @Column()
-    private String creatorProfileId;
+    private Long creatorProfileId;
 
     @Column()
     private String stripeSubscriptionId;
 
     private LocalDateTime timestamp;
+
+    private String state;
 
     @PrePersist
     public void prePersist() {
@@ -38,8 +40,8 @@ public class Subscription {
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
 
-    public String getCreatorProfileId() { return creatorProfileId; }
-    public void setCreatorProfileId(String creatorProfileId) { this.creatorProfileId = creatorProfileId; }
+    public Long getCreatorProfileId() { return creatorProfileId; }
+    public void setCreatorProfileId(Long creatorProfileId) { this.creatorProfileId = creatorProfileId; }
 
     public String getStripeSubscriptionId() { return stripeSubscriptionId; }
     public void setStripeSubscriptionId(String stripeSubscriptionId) {
@@ -52,6 +54,14 @@ public class Subscription {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
 }
