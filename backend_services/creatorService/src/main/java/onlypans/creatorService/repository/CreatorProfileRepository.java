@@ -1,6 +1,6 @@
 package onlypans.creatorService.repository;
 
-import onlypans.creatorService.entity.CreatorProfile;
+import onlypans.common.entity.CreatorProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

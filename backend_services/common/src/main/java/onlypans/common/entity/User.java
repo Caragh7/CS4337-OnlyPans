@@ -1,6 +1,8 @@
-package onlypans.userService.entity;
+package onlypans.common.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
 

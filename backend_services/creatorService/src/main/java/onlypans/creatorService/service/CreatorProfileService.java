@@ -2,10 +2,11 @@ package onlypans.creatorService.service;
 
 import onlypans.common.dtos.CreatorProfileRequest;
 import onlypans.common.exceptions.*;
-import onlypans.creatorService.entity.CreatorProfile;
+import onlypans.common.entity.CreatorProfile;
 import onlypans.creatorService.repository.CreatorProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@EntityScan(basePackages = { "onlypans.common.entity"})
 public class CreatorProfileService {
 
     private final CreatorProfileRepository creatorProfileRepository;

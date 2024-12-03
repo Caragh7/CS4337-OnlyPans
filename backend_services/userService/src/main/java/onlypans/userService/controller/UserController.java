@@ -3,7 +3,7 @@ package onlypans.userService.controller;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import onlypans.common.dtos.CreatorProfileRequest;
-import onlypans.userService.entity.User;
+import onlypans.common.entity.User;
 import onlypans.userService.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

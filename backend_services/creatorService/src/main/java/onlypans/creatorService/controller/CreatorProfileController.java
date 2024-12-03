@@ -1,7 +1,7 @@
 package onlypans.creatorService.controller;
 
 import onlypans.common.dtos.CreatorProfileRequest;
-import onlypans.creatorService.entity.CreatorProfile;
+import onlypans.common.entity.CreatorProfile;
 import onlypans.creatorService.service.CreatorProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package onlypans.userService.repository;
 
-import onlypans.userService.entity.User;
+import onlypans.common.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

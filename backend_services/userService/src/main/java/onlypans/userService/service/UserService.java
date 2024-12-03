@@ -4,10 +4,10 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import onlypans.common.dtos.CreatorProfileRequest;
 import onlypans.common.exceptions.*;
-import onlypans.userService.entity.Account;
-import onlypans.userService.entity.User;
+import onlypans.common.entity.User;
 import onlypans.userService.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@EntityScan(basePackages = { "onlypans.common.entity"})
 public class UserService {
 
     private RestTemplate restTemplate;
