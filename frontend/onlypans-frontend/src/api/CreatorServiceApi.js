@@ -3,7 +3,7 @@ import axios from "axios";
 export const deleteCreatorProfile = async (userId, token) => {
     try {
         const response = await axios.delete(
-            `${process.env.REACT_APP_API_GATEWAY_URL}/creator-profiles/${userId}`, //TODO: FIx
+            `${process.env.REACT_APP_API_GATEWAY_URL}/creator-profiles`, 
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
