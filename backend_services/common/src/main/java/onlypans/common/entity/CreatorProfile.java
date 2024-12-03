@@ -21,10 +21,11 @@ public class CreatorProfile {
     public CreatorProfile() {}
 
     // New constructor with arguments for userId, firstName, and lastName
-    public CreatorProfile(String userId, String firstName, String lastName) {
+    public CreatorProfile(String userId, String firstName, String lastName, String stripePriceId) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.stripePriceId = stripePriceId;
     }
     // Getters and setters
     public Long getId() { return id; }

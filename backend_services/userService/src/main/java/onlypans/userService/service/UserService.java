@@ -43,7 +43,7 @@ public class UserService {
     }
 
 
-    public Optional<User> getUserById(Long id) {
+    public Optional<User> getUserById(String id) {
         try {
             return userRepository.findById(id);
         } catch (Exception e) {
@@ -65,20 +65,19 @@ public class UserService {
         }
     }
 
-    public User updateUser(Long id, User userDetails) {
+    public User updateUser(String id, User userDetails) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with ID " + id));
         user.setUsername(userDetails.getUsername());
         user.setFirstName(userDetails.getFirstName());
         user.setLastName(userDetails.getLastName());
         user.setEmail(userDetails.getEmail());
-        user.setPassword(userDetails.getPassword());
 
         return userRepository.save(user);
 
     }
 
 
-    public void deleteUser(Long id) { // make this delete an account and the creatorprofile when a user is deleted!!
+    public void deleteUser(String id) { // make this delete an account and the creatorprofile when a user is deleted!!
         try {
             userRepository.deleteById(id);
         } catch (Exception e) {
