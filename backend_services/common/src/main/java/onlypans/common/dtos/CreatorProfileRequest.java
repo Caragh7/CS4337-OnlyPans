@@ -1,26 +1,29 @@
 package onlypans.common.dtos;
 
 public class CreatorProfileRequest {
-    private Long userId;
+    private String userId;
     private String firstName;
     private String lastName;
+    private String price;
 
     // Default constructor
-    public CreatorProfileRequest() {}
+    public CreatorProfileRequest() {
+    }
 
     // Parameterized constructor
-    public CreatorProfileRequest(Long userId, String firstName, String lastName) {
+    public CreatorProfileRequest(String userId, String firstName, String lastName, String price) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.price = price;
     }
 
     // Getters and setters
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -39,5 +42,14 @@ public class CreatorProfileRequest {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
 }
 
