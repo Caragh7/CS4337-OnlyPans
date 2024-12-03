@@ -131,6 +131,37 @@ services:
     networks:
       - backend
 
+  creator-service:
+    image: openjdk:21
+    container_name: creator-service
+    volumes:
+      - ./backend_services/creatorService/build/libs/creatorService-1.0.0.jar:/app/service.jar
+    command: [ "java", "-jar", "/app/service.jar" ]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/creator_service.env
+    networks:
+      - backend
+
+  frontend:
+    build:
+      context: ./frontend/onlypans-frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    volumes:
+      - ./frontend/onlypans-frontend:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./configs/frontend.env
+    depends_on:
+      - api-gateway
+    networks:
+      - backend
+
 
 networks:
   backend:
