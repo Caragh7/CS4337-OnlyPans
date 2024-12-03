@@ -3,14 +3,14 @@ import axios from "axios";
 export const deleteCreatorProfile = async (userId, token) => {
     try {
         const response = await axios.delete(
-            `${process.env.REACT_APP_API_GATEWAY_URL}/creator-profiles/${userId}`,
+            `${process.env.REACT_APP_API_GATEWAY_URL}/creator-profiles/delete`, 
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             }
         );
-        return response.data; // delete success response
+        return response.data;
     } catch (error) {
         console.error("Error deleting creator profile:", error.response || error.message || error);
         throw error;

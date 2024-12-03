@@ -1,22 +1,46 @@
 import React, { useEffect, useState } from "react";
-import { fetchAllCreators } from "../api/CreatorServiceApi"; // Adjust the path as per your project structure
+import { fetchAllCreators } from "../api/CreatorServiceApi";
+import { subscribe } from "../api/SubscriptionApi";
+import { loadStripe } from "@stripe/stripe-js";
 
-
-const CreatorsPage = ({keycloak, authenticated, user}) => {
+const CreatorsPage = ({ keycloak, authenticated, user }) => {
     const [creators, setCreators] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const [stripe, setStripe] = useState(null);
 
     const token = keycloak?.token;
+
+    useEffect(() => {
+        const initializeStripe = async () => {
+            const stripeObj = await loadStripe(process.env.REACT_APP_STRIPE_KEY);
+            setStripe(stripeObj);
+        };
+        initializeStripe();
+    }, []);
+
+    const handleSubscription = async (id) => {
+        try {
+            const response = await subscribe(id, token);
+            console.log(response)
+            const sessionId = response;
+            if (stripe && sessionId) {
+                await stripe.redirectToCheckout({ sessionId });
+            } else {
+                console.error("Stripe not initialized or sessionId missing");
+            }
+        } catch (error) {
+            console.error("Subscription failed:", error);
+        }
+    };
 
     useEffect(() => {
         const getCreators = async () => {
             try {
                 const data = await fetchAllCreators(token);
                 setCreators(data);
-                setLoading(false);
             } catch (error) {
                 console.error("Failed to load creators:", error);
+            } finally {
                 setLoading(false);
             }
         };
@@ -31,27 +55,40 @@ const CreatorsPage = ({keycloak, authenticated, user}) => {
     return (
         <div>
             <h1 style={{ textAlign: "center", margin: "20px 0" }}>All Creators</h1>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px", padding: "20px" }}>
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                    gap: "20px",
+                    padding: "20px",
+                }}
+            >
                 {creators.map((creator) => (
-                    <CreatorCard key={creator.id} creator={creator} />
+                    <CreatorCard
+                        token={token}
+                        onSubscribe={handleSubscription}
+                        key={creator.id}
+                        creator={creator}
+                    />
                 ))}
             </div>
         </div>
     );
 };
-const CreatorCard = ({ creator }) => {
-    const placeholderImage = "mark_zuc.jpg"; // mark zuc placeholder
+
+const CreatorCard = ({ token, creator, onSubscribe }) => {
+    const placeholderImage = "mark_zuc.jpg";
+
     return (
         <div
             style={{
                 borderRadius: "15px",
-                overflow: "hidden", // Ensures the split design works
+                overflow: "hidden",
                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
                 textAlign: "center",
                 width: "100%",
             }}
         >
-            {/* Top section: Blue background */}
             <div
                 style={{
                     backgroundColor: "#007BFF",
@@ -72,8 +109,6 @@ const CreatorCard = ({ creator }) => {
                 />
                 <h2>{`${creator.firstName} ${creator.lastName}`}</h2>
             </div>
-
-            {/* Bottom section: White background */}
             <div
                 style={{
                     backgroundColor: "white",
@@ -92,7 +127,9 @@ const CreatorCard = ({ creator }) => {
                         cursor: "pointer",
                         fontWeight: "bold",
                     }}
-                    onClick={() => alert(`Subscribed to ${creator.firstName} ${creator.lastName}`)}
+                    onClick={() => {
+                        onSubscribe(creator.userId);
+                    }}
                 >
                     Subscribe
                 </button>

@@ -3,7 +3,7 @@ package onlypans.userService.controller;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import onlypans.common.dtos.CreatorProfileRequest;
-import onlypans.userService.entity.User;
+import onlypans.common.entity.User;
 import onlypans.userService.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,19 +27,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable Long id) {
+    public Optional<User> getUserById(@PathVariable String id) {
         return userService.getUserById(id);
-    }
-
-    @GetMapping("/by-email")
-    public ResponseEntity<User> getUserByEmail(@RequestParam String email) {
-        System.out.println("Received email: " + email);
-        try {
-            User user = userService.getUserByEmail(email);
-            return ResponseEntity.ok(user);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
     }
 
     @GetMapping
@@ -48,22 +37,23 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User userDetails) {
         return new ResponseEntity<>(userService.updateUser(id, userDetails), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
 
-    @PostMapping("/{userId}/upgrade")
+    @PostMapping("/upgrade")
     public ResponseEntity<String> upgradeToCreatorProfile(
-            @PathVariable Long userId,
-            @RequestBody CreatorProfileRequest request) {
+            @RequestBody CreatorProfileRequest request,
+            Authentication authentication) {
 
+        String userId = authentication.getName();
         Optional<User> optionalUser = userService.getUserById(userId);
 
         if (optionalUser.isPresent()) {

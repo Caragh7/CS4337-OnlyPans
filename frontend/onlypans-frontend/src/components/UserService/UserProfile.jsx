@@ -1,4 +1,4 @@
-import { getUserByEmail, updateUser } from '../../api/UserServiceApi'
+import { updateUser } from '../../api/UserServiceApi'
 import {useContext, useEffect, useState} from "react";
 
 const UserProfile = ({keycloak, authenticated, user}) => {
@@ -12,18 +12,15 @@ const UserProfile = ({keycloak, authenticated, user}) => {
 
     const handleUpdate = async () => {
         try {
-            // use token from keycloak props (passed to userprofile component in parent app.js)
             const token = keycloak?.token;
             if (!token) {
                 console.error("Token is missing. User might not be logged in.");
                 return;
             }
 
-            // call the user service api
             const updatedUser = await updateUser(user.id, userData, token);
             console.log(updatedUser)
             console.log(token)
-            // updating the user state with the new data
             setUserData(updatedUser);
 
 

@@ -4,10 +4,10 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import onlypans.common.dtos.CreatorProfileRequest;
 import onlypans.common.exceptions.*;
-import onlypans.userService.entity.Account;
-import onlypans.userService.entity.User;
+import onlypans.common.entity.User;
 import onlypans.userService.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@EntityScan(basePackages = { "onlypans.common.entity"})
 public class UserService {
 
     private RestTemplate restTemplate;
@@ -31,17 +32,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private AccountService accountService;
-
-
-
     public User createUser(User user) {
         try {
             userRepository.save(user);
-            Account account = new Account();
-            account.setUser(user);
-            accountService.createAccount(account);
             return userRepository.save(user);
 
         } catch (Exception e) {
@@ -50,7 +43,7 @@ public class UserService {
     }
 
 
-    public Optional<User> getUserById(Long id) {
+    public Optional<User> getUserById(String id) {
         try {
             return userRepository.findById(id);
         } catch (Exception e) {
@@ -72,20 +65,19 @@ public class UserService {
         }
     }
 
-    public User updateUser(Long id, User userDetails) {
+    public User updateUser(String id, User userDetails) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with ID " + id));
         user.setUsername(userDetails.getUsername());
         user.setFirstName(userDetails.getFirstName());
         user.setLastName(userDetails.getLastName());
         user.setEmail(userDetails.getEmail());
-        user.setPassword(userDetails.getPassword());
 
         return userRepository.save(user);
 
     }
 
 
-    public void deleteUser(Long id) { // make this delete an account and the creatorprofile when a user is deleted!!
+    public void deleteUser(String id) { // make this delete an account and the creatorprofile when a user is deleted!!
         try {
             userRepository.deleteById(id);
         } catch (Exception e) {

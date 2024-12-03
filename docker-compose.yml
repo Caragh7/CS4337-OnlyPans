@@ -131,6 +131,23 @@ services:
     networks:
       - backend
 
+  frontend:
+    build:
+      context: ./frontend/onlypans-frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    volumes:
+      - ./frontend/onlypans-frontend:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./configs/frontend.env
+    depends_on:
+      - api-gateway
+    networks:
+      - backend
+
 
 networks:
   backend:
