@@ -81,11 +81,11 @@ public class SubscriptionService {
         return subscriptionRepository.findByUserId(userId);
     }
 
-    public Price createPrice(int price, String creatorProfileId) throws StripeException {
+    public Price createPrice(int price, String name) throws StripeException {
 
         ProductCreateParams createParams = ProductCreateParams.builder()
-                .setName("One Month" + " " + creatorProfileId)
-                .setDescription(creatorProfileId)
+                .setName("One Month" + " " + name)
+                .setDescription(name)
                 .build();
 
         String productId = this.client.products().create(createParams).getId();
@@ -96,7 +96,7 @@ public class SubscriptionService {
                 .setRecurring(PriceCreateParams.Recurring.builder()
                         .setInterval(PriceCreateParams.Recurring.Interval.MONTH)
                         .build())
-                .setNickname(creatorProfileId + (Math.floor(Math.random() * 10000) - 100))
+                .setNickname(name + (Math.floor(Math.random() * 10000) - 100))
                 .setProduct(productId)
                 .build();
 

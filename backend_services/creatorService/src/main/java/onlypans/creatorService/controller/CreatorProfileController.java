@@ -51,7 +51,7 @@ public class CreatorProfileController {
     }
 
 
-    @DeleteMapping("/")
+    @DeleteMapping("/delete")
     public ResponseEntity<Void> deleteCreatorProfile(Authentication authentication) {
         creatorProfileService.deleteCreatorProfile(authentication.getName());
         return ResponseEntity.noContent().build();

@@ -33,6 +33,7 @@ public class CreatorProfileService {
         try {
             CreatePriceRequest createPriceRequest = new CreatePriceRequest();
             createPriceRequest.setPrice(request.getPrice());
+            createPriceRequest.setCreatorName(request.getFirstName() + "_" + request.getLastName());
             String id = this.subscriptionServiceClient.createPrice(createPriceRequest);
 
             CreatorProfile profile = new CreatorProfile(request.getUserId(), request.getFirstName(), request.getLastName(), id);

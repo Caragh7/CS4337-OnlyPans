@@ -34,12 +34,9 @@ public class SubscriptionController {
 
     @PostMapping("/createPrice")
     public String createPrice(@RequestBody CreatePriceRequest request) throws StripeException {
-        String creatorProfleId = request.getCreatorProfileId();
         float price = Float.parseFloat(request.getPrice());
-
         int stripePrice = Math.round(price * 100);
-
-        Price createdPrice = subscriptionService.createPrice(stripePrice, creatorProfleId);
+        Price createdPrice = subscriptionService.createPrice(stripePrice, request.getCreatorName());
 
         System.out.println("Price Created! " + createdPrice.getId() + " " + createdPrice.getNickname());
         return createdPrice.getId();

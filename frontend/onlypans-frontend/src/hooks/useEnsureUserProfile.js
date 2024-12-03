@@ -4,6 +4,7 @@ import { getUserById, createUser } from "../api/UserServiceApi";
 
 const extractUserDetailsFromToken = (token) => {
     const decoded = jwtDecode(token);
+    console.log(decoded)
     return {
         username : decoded.preferred_username || "",
         firstName: decoded.given_name || "",
