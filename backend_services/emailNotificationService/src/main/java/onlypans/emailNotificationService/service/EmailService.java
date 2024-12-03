@@ -36,7 +36,7 @@ public class EmailService {
         emailSender.send(message);
     }
     // listen to email_queue
-    @RabbitListener(queues = "email_queue")
+    @RabbitListener(queues = "email.queue")
     public void processEmailMessage(EmailDetailDTO emailDetailDTO) throws MessagingException {
         // extract email
         String to = emailDetailDTO.getTo();

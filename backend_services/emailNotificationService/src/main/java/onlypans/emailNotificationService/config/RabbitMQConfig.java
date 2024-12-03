@@ -25,7 +25,7 @@ public class RabbitMQConfig {
     @Bean
     public Queue emailQueue() {
         // store messages for processing
-        return new Queue(emailQueue, true);
+        return QueueBuilder.durable(emailQueue).build();
     }
 
     @Bean
