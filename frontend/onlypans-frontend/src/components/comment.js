@@ -40,13 +40,24 @@ const Comments = ({ postId }) => {
                 console.error("Token not available");
                 return;
             }
+
             const addedComment = await addCommentToPost(postId, newComment, token);
+
+            const response = await fetch(`http://localhost:8080/users/${addedComment.userId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const userData = await response.json();
+
+            addedComment.authorName = userData.firstName;
             setComments((prevComments) => [...prevComments, addedComment]);
             setNewComment("");
         } catch (error) {
             console.error("Error adding comment:", error);
         }
     };
+
 
 
     return (
@@ -64,10 +75,33 @@ const Comments = ({ postId }) => {
                     {comments.length > 0 ? (
                         comments.map((comment) => (
                             <ListItem key={comment.id} divider>
-                                <ListItemText
-                                    primary={comment.authorName || "OnlyPans User"}
-                                    secondary={comment.text}
-                                />
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        width: "100%",
+                                    }}
+                                >
+                                    <Box>
+                                        <Typography variant="body1" fontWeight="bold">
+                                            {comment.authorName || "Onlypans user"}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {comment.text}
+                                        </Typography>
+                                    </Box>
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{
+                                            textAlign: "right",
+                                            whiteSpace: "nowrap",
+                                        }}
+                                    >
+                                        {new Date(comment.timestamp).toLocaleString("en-GB", {year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+                                        })}
+                                    </Typography>
+                                </Box>
                             </ListItem>
                         ))
                     ) : (

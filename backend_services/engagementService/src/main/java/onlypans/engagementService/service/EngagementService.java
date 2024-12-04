@@ -70,4 +70,19 @@ public class EngagementService {
     public List<Comments> getComments(Long postId) {
         return commentRepository.findByPostId(postId);
     }
+
+    public List<Comments> getCommentsWithUserNames(Long postId) {
+        List<Comments> comments = commentRepository.findByPostId(postId);
+
+        comments.forEach(comment -> {
+            try {
+                User user = userServiceClient.getUserById(comment.getUserId());
+                comment.setAuthorName(user.getFirstName());
+            } catch (Exception e) {
+                comment.setAuthorName("Unknown User");
+            }
+        });
+
+        return comments;
+    }
 }

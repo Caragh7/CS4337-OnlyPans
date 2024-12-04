@@ -22,6 +22,10 @@ public class Comments {
 
     private LocalDateTime timestamp;
 
+    @Transient
+    private String authorName;
+
+
     @PrePersist
     public void prePersist() {
         if (this.timestamp == null) {
@@ -43,4 +47,8 @@ public class Comments {
 
     public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+
+    public String getAuthorName() { return authorName; }
+    public void setAuthorName(String authorName) { this.authorName = authorName; }
+
 }
