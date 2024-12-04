@@ -22,6 +22,7 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestBody Post post) {
+
         return new ResponseEntity<>(postService.createPost(post, post.getMediaUrl()), HttpStatus.CREATED);
     }
 

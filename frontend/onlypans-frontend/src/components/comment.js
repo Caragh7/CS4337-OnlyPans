@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { fetchCommentsForPost, addCommentToPost } from "../api/EngagementServiceApi";
-import { Box, Typography, TextField, Button, CircularProgress, List, ListItem, ListItemText, Paper, Divider} from "@mui/material";
+import { Box, Typography, TextField, Button, CircularProgress, List, ListItem, ListItemText, Divider } from "@mui/material";
+import { KeycloakContext } from "./KeyCloakContext";
 
 const Comments = ({ postId }) => {
+    const { keycloak } = useContext(KeycloakContext);
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [loading, setLoading] = useState(false);
@@ -11,7 +13,13 @@ const Comments = ({ postId }) => {
         const loadComments = async () => {
             setLoading(true);
             try {
-                const fetchedComments = await fetchCommentsForPost(postId);
+                const token = keycloak?.token;
+                if (!token) {
+                    console.error("Token not available");
+                    return;
+                }
+                const fetchedComments = await fetchCommentsForPost(postId, token);
+                console.log("postid" + postId)
                 setComments(fetchedComments);
             } catch (error) {
                 console.error("Error fetching comments:", error);
@@ -21,19 +29,25 @@ const Comments = ({ postId }) => {
         };
 
         loadComments();
-    }, [postId]);
+    }, [postId, keycloak]);
 
     const handleAddComment = async () => {
         if (!newComment.trim()) return;
 
         try {
-            const addedComment = await addCommentToPost(postId, newComment);
+            const token = keycloak?.token;
+            if (!token) {
+                console.error("Token not available");
+                return;
+            }
+            const addedComment = await addCommentToPost(postId, newComment, token);
             setComments((prevComments) => [...prevComments, addedComment]);
             setNewComment("");
         } catch (error) {
             console.error("Error adding comment:", error);
         }
     };
+
 
     return (
         <div style={{ marginTop: "20px" }}>

@@ -43,6 +43,7 @@ public class EngagementController {
 
     @GetMapping("/comments/{postId}")
     public ResponseEntity<List<Comments>> getComments(@PathVariable Long postId) {
+        System.out.println("Fetching comments for postId: " + postId);
         return new ResponseEntity<>(engagementService.getComments(postId), HttpStatus.OK);
     }
 }
