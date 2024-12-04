@@ -3,6 +3,7 @@ package onlypans.engagementService.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "Likes")
 public class Likes {
 
     @Id

@@ -1,11 +1,13 @@
 package onlypans.engagementService.controller;
 
+import onlypans.common.dtos.CreateCommentRequest;
 import onlypans.engagementService.entity.Comments;
 import onlypans.engagementService.entity.Likes;
 import onlypans.engagementService.service.EngagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,10 +37,8 @@ public class EngagementController {
 
     @PostMapping("/comments")
     public ResponseEntity<Comments> commentOnPost(
-            @RequestParam Long postId,
-            @RequestParam Long userId,
-            @RequestBody String text) {
-        return new ResponseEntity<>(engagementService.addComment(postId, userId, text), HttpStatus.CREATED);
+            @RequestBody CreateCommentRequest commentRequest, Authentication authentication) {
+        return new ResponseEntity<>(engagementService.addComment(commentRequest.getPostId(), authentication.getName(), commentRequest.getCommentBody()), HttpStatus.CREATED);
     }
 
     @GetMapping("/comments/{postId}")

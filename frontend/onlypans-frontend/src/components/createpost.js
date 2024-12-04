@@ -43,7 +43,7 @@ function CreatePost({ open, onClose }) {
 
             const postContent = {
                 contentDescription: content,
-                authorName: 'someone',
+                authorName: 'Onlypans User',
                 mediaUrl: fileName
             };
 

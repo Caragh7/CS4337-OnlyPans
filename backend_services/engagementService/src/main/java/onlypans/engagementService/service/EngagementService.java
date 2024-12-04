@@ -1,5 +1,7 @@
 package onlypans.engagementService.service;
 
+import onlypans.common.entity.User;
+import onlypans.engagementService.clients.UserServiceClient;
 import onlypans.engagementService.entity.Comments;
 import onlypans.engagementService.entity.Likes;
 import onlypans.engagementService.repository.CommentRepository;
@@ -12,12 +14,20 @@ import java.util.List;
 @Service
 public class EngagementService {
 
-    @Autowired
-    private LikeRepository likeRepository;
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
+    private final UserServiceClient userServiceClient;
 
     @Autowired
-    private CommentRepository commentRepository;
-
+    public EngagementService(
+            LikeRepository likeRepository,
+            CommentRepository commentRepository,
+            UserServiceClient userServiceClient
+    ) {
+        this.likeRepository = likeRepository;
+        this.commentRepository = commentRepository;
+        this.userServiceClient = userServiceClient;
+    }
     public Likes addLike(Long postId, Long userId) {
         if (postId == null || userId == null) {
             throw new IllegalArgumentException("postId and userId must not be null");
@@ -46,7 +56,7 @@ public class EngagementService {
         return likeRepository.countByPostId(postId);
     }
 
-    public Comments addComment(Long postId, Long userId, String text) {
+    public Comments addComment(Long postId, String userId, String text) {
         if (postId == null || userId == null) {
             throw new IllegalArgumentException("postId and userId must not be null");
         }

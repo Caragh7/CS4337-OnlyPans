@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "Comments")
 public class Comments {
 
     @Id
@@ -14,7 +15,7 @@ public class Comments {
     private Long postId;
 
     @Column(nullable = false)
-    private Long userId;
+    private String userId;
 
     @Column(nullable = false, length = 500)
     private String text;
@@ -34,8 +35,8 @@ public class Comments {
     public Long getPostId() { return postId; }
     public void setPostId(Long postId) { this.postId = postId; }
 
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }

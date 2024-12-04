@@ -112,7 +112,7 @@ class EngagementServiceTest {
     @Test
     void testAddComment() {
         Long postId = 1L;
-        Long userId = 2L;
+        String userId = 2L;
         String text = "test comment...";
 
         Comments comment = new Comments();
