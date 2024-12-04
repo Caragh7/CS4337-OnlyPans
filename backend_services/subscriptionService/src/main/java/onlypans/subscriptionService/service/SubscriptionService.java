@@ -4,11 +4,10 @@ import com.stripe.Stripe;
 import com.stripe.StripeClient;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Price;
-import com.stripe.model.Product;
+import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.PriceCreateParams;
 import com.stripe.param.ProductCreateParams;
-import com.stripe.param.ProductRetrieveParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import onlypans.common.dtos.CreateSubscriptionRequest;
 import onlypans.common.entity.User;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -44,6 +44,10 @@ public class SubscriptionService {
         this.subscriptionRepository = subscriptionRepository;
         this.userServiceClient = userServiceClient;
         this.creatorServiceClient = creatorServiceClient;
+    }
+
+    public Optional<Subscription> getSubscription(Long subscriptionId) {
+        return this.subscriptionRepository.findById(subscriptionId);
     }
 
     public boolean checkUserExists(String userId) {
@@ -122,4 +126,47 @@ public class SubscriptionService {
     public Optional<CreatorProfile> getCreatorProfileByUserId(String userId) {
         return creatorServiceClient.getCreatorProfile(userId);
     }
+
+    public void handleCheckoutSessionCompleted(StripeObject stripeObject) {
+        if (stripeObject instanceof com.stripe.model.checkout.Session session) {
+            String subscriptionId = session.getSubscription();
+            Map<String, String> metadata = session.getMetadata();
+
+            if (metadata != null) {
+                String subscriptionIdMeta = metadata.get("subscriptionId");
+                String userId = metadata.get("userId");
+
+                Optional<Subscription> optionalSubscription = getSubscription(Long.valueOf(subscriptionIdMeta));
+                if (optionalSubscription.isPresent()) {
+                    Subscription subscription = optionalSubscription.get();
+                    subscription.setStripeSubscriptionId(subscriptionId);
+                    subscription.setState("ACTIVE");
+                    subscriptionRepository.save(subscription);
+                    System.out.println("Subscription updated successfully.");
+                } else {
+                    System.out.println("Subscription not found for ID: " + subscriptionIdMeta);
+                }
+            } else {
+                System.out.println("No metadata found in session.");
+            }
+        } else {
+            System.out.println("Stripe object is not a Session.");
+        }
+    }
+
+    public void handleSubscriptionDeleted(StripeObject stripeObject) {
+        if (stripeObject instanceof com.stripe.model.Subscription subscription) {
+//            String stripeSubscriptionId = subscription.getId();
+//            List<Subscription> subscriptions = getSubscriptionsByStripeId(stripeSubscriptionId);
+//            subscriptions.forEach(sub -> {
+//                sub.setState("CANCELED");
+//                subscriptionService.saveSubscription(sub);
+//            });
+//            System.out.println("Subscription(s) canceled successfully for Stripe ID: " + stripeSubscriptionId);
+        } else {
+            System.out.println("Stripe object is not a Subscription.");
+        }
+    }
+
+
 }
