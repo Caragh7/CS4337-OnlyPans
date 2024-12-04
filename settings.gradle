@@ -7,6 +7,7 @@ include 'backend_services:creatorService'
 include 'backend_services:subscriptionService'
 include 'backend_services:mediaService'
 include 'backend_services:emailNotificationService'
+findProject('backend_services:emailNotificationService') ?.name="emailNotificationService"
 findProject(':backend_services:subscriptionService')?.name = 'subscriptionService'
 include 'backend_services:GlobalExceptions'
 findProject(':backend_services:GlobalExceptions')?.name = 'GlobalExceptions'
