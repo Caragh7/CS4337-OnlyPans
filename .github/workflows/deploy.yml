@@ -62,4 +62,4 @@ jobs:
       - name: Deploy with Docker Compose
         run: |
           docker compose -p onlypans down
-          docker compose -p onlypans up -d
+          docker compose -p onlypans up --build -d
