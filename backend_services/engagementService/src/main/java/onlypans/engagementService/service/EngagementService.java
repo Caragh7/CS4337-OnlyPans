@@ -1,5 +1,6 @@
 package onlypans.engagementService.service;
 
+import jakarta.transaction.Transactional;
 import onlypans.common.entity.User;
 import onlypans.engagementService.clients.UserServiceClient;
 import onlypans.engagementService.entity.Comments;
@@ -86,14 +87,18 @@ public class EngagementService {
         return comments;
     }
 
+    @Transactional
     public Likes toggleLike(Long postId, String userId) {
+
         if (postId == null || userId == null) {
             throw new IllegalArgumentException("postId and userId can not be null");
         }
 
         boolean alreadyLiked = likeRepository.existsByPostIdAndUserId(postId, userId);
+        System.out.println(alreadyLiked);
 
         if (alreadyLiked) {
+            System.out.println("user with id " + userId +  " has Liked post " + postId + " already");
             likeRepository.deleteByPostIdAndUserId(postId, userId);
             return null;
         } else {

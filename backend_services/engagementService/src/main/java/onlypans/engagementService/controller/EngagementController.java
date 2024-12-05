@@ -40,7 +40,7 @@ public class EngagementController {
     @PostMapping("/likes/toggle")
     public ResponseEntity<String> toggleLike(@RequestParam Long postId, Authentication authentication) {
         String userId = authentication.getName();
-        Likes like = engagementService.toggleLike(postId, String.valueOf(userId));
+        Likes like = engagementService.toggleLike(postId, userId);
 
         if (like == null) {
             return new ResponseEntity<>("Like removed", HttpStatus.OK);
