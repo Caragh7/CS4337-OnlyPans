@@ -1,4 +1,4 @@
-package onlypans.mediaService.security;
+package onlypans.engagementService.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +17,7 @@ public class SecurityConfig {
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt());
 
+
         return http.build();
     }
-
 }
-
