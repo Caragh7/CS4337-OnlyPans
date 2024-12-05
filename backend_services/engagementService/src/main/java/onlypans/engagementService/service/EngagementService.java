@@ -61,6 +61,9 @@ public class EngagementService {
         if (postId == null || userId == null) {
             throw new IllegalArgumentException("postId and userId must not be null");
         }
+        if (text == null || text.trim().isEmpty()) {
+            throw new IllegalArgumentException("comment text must not be empty");
+        }
         Comments comment = new Comments();
         comment.setPostId(postId);
         comment.setUserId(userId);
