@@ -118,4 +118,39 @@ class EngagementControllerTest {
 
         verify(engagementService, times(1)).getCommentsWithUserNames(1L);
     }
+
+    @Test
+    @WithMockUser(username = "user123")
+    void testToggleLike_AddLike() throws Exception {
+        Long postId = 1L;
+        Likes like = new Likes();
+        like.setPostId(postId);
+        like.setUserId("user123");
+
+        when(engagementService.toggleLike(postId, "user123")).thenReturn(like);
+
+        mockMvc.perform(post("/engagements/likes/toggle")
+                        .param("postId", postId.toString())
+                        .with(csrf()))
+                .andExpect(status().isCreated())
+                .andExpect(content().string("Like added"));
+
+        verify(engagementService, times(1)).toggleLike(postId, "user123");
+    }
+
+    @Test
+    @WithMockUser(username = "user123")
+    void testToggleLike_RemoveLike() throws Exception {
+        Long postId = 1L;
+
+        when(engagementService.toggleLike(postId, "user123")).thenReturn(null);
+
+        mockMvc.perform(post("/engagements/likes/toggle")
+                        .param("postId", postId.toString())
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Like removed"));
+
+        verify(engagementService, times(1)).toggleLike(postId, "user123");
+    }
 }

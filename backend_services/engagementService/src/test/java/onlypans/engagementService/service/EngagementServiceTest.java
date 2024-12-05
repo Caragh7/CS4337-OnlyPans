@@ -158,4 +158,28 @@ class EngagementServiceTest {
 
         verify(commentRepository).findByPostId(postId);
     }
+
+    @Test
+    void testToggleLike_NullPostId() {
+        String userId = "user123";
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            engagementService.toggleLike(null, userId);
+        });
+
+        assertEquals("postId and userId can not be null", exception.getMessage());
+        verify(likeRepository, never()).existsByPostIdAndUserId(any(), any());
+    }
+
+    @Test
+    void testToggleLike_NullUserId() {
+        Long postId = 1L;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            engagementService.toggleLike(postId, null);
+        });
+
+        assertEquals("postId and userId can not be null", exception.getMessage());
+        verify(likeRepository, never()).existsByPostIdAndUserId(any(), any());
+    }
 }
