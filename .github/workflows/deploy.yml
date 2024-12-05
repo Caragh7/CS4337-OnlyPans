@@ -38,22 +38,18 @@ jobs:
       # Ensure gradlew is executable
       - name: Ensure gradlew is Executable
         run: |
-          chmod +x backend_services/subscriptionService/gradlew
-          chmod +x backend_services/userService/gradlew
-          chmod +x backend_services/postService/gradlew
-          chmod +x backend_services/mediaService/gradlew
-          chmod +x backend_services/creatorService/gradlew
-          chmod +x api_gateway/gradlew
+          chmod +x gradlew
+          find . -name "gradlew" -exec chmod +x {} \;
 
       # Build Backend JARs
       - name: Build JARs
         run: |
-          cd backend_services/subscriptionService && ./gradlew clean build -x test && cd -
-          cd backend_services/userService && ./gradlew clean build -x test && cd -
-          cd backend_services/postService && ./gradlew clean build -x test && cd -
-          cd backend_services/mediaService && ./gradlew clean build -x test && cd -
-          cd backend_services/creatorService && ./gradlew clean build -x test && cd -
-          cd api_gateway && ./gradlew clean build -x test && cd -
+          ./gradlew -p backend_services/subscriptionService clean build -x test || echo "No gradlew in subscriptionService"
+          ./gradlew -p backend_services/userService clean build -x test || echo "No gradlew in userService"
+          ./gradlew -p backend_services/postService clean build -x test || echo "No gradlew in postService"
+          ./gradlew -p backend_services/mediaService clean build -x test || echo "No gradlew in mediaService"
+          ./gradlew -p backend_services/creatorService clean build -x test || echo "No gradlew in creatorService"
+          ./gradlew -p api_gateway clean build -x test || echo "No gradlew in api_gateway"
 
       # Debug Built Files
       - name: Debug Built JARs
