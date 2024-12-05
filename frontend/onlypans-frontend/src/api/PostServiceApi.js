@@ -1,9 +1,12 @@
 import axios from 'axios';
 
-export const getPresignedUrl = async (fileName) => {
+export const getPresignedUrl = async (fileName, token) => {
     try {
         const { data } = await axios.get(`${process.env.REACT_APP_API_GATEWAY_URL}/media/presigned-url`, {
             params: { fileName },
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         });
         return data;
     } catch (error) {
@@ -11,7 +14,6 @@ export const getPresignedUrl = async (fileName) => {
         throw error;
     }
 };
-
 
 export const uploadFile = async (presignedUrl, file) => {
     try {
@@ -24,17 +26,19 @@ export const uploadFile = async (presignedUrl, file) => {
     }
 };
 
-
-export const createPost = async (postContent) => {
+export const createPost = async (postContent, token) => {
     try {
-        const { data } = await axios.post(`${process.env.REACT_APP_API_GATEWAY_URL}/posts`, postContent);
+        const { data } = await axios.post(`${process.env.REACT_APP_API_GATEWAY_URL}/posts`, postContent, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return data;
     } catch (error) {
         console.error('Error creating post:', error);
         throw error;
     }
 };
-
 
 export const fetchPosts = async (token) => {
     try {
