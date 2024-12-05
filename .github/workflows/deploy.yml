@@ -63,4 +63,3 @@ jobs:
         run: |
           docker compose -p onlypans down
           docker compose -p onlypans up -d
-          docker restart $(docker ps --filter "name=uni-onlypans-frontend" --format "{{.ID}}" | head -n 1) 
