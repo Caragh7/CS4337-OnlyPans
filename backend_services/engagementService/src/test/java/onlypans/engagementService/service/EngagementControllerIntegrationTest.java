@@ -39,7 +39,7 @@ class EngagementControllerIntegrationTest {
     @Test
     void testLikePost() throws Exception {
         Likes like = new Likes();
-        when(engagementService.addLike(1L, 2L)).thenReturn(like);
+        when(engagementService.addLike(1L, "2L")).thenReturn(like);
 
         mockMvc.perform(post("/engagements/likes")
                         .param("postId", "1")
@@ -49,7 +49,7 @@ class EngagementControllerIntegrationTest {
 
     @Test
     void testUnlikePost() throws Exception {
-        Mockito.doNothing().when(engagementService).removeLike(1L, 2L);
+        Mockito.doNothing().when(engagementService).removeLike(1L, "2L");
 
         mockMvc.perform(delete("/engagements/likes")
                         .param("postId", "1")
@@ -70,7 +70,7 @@ class EngagementControllerIntegrationTest {
     void testCommentOnPost() throws Exception {
         Comments comment = new Comments();
         comment.setText("Nice post!");
-        when(engagementService.addComment(1L, 2L, "test!")).thenReturn(comment);
+        when(engagementService.addComment(1L, "2L", "test!")).thenReturn(comment);
 
         mockMvc.perform(post("/engagements/comments")
                         .param("postId", "1")

@@ -36,7 +36,7 @@ class EngagementServiceIntegrationTest {
 
     @Test
     void testAddAndGetLike() {
-        Likes like = engagementService.addLike(1L, 2L);
+        Likes like = engagementService.addLike(1L, "2L");
 
         assertNotNull(like);
         assertEquals(1L, like.getPostId());
@@ -48,7 +48,7 @@ class EngagementServiceIntegrationTest {
 
     @Test
     void testAddAndGetComments() {
-        Comments comment = engagementService.addComment(1L, 2L, "Test comment");
+        Comments comment = engagementService.addComment(1L, "2L", "Test comment");
 
         assertNotNull(comment);
         assertEquals(1L, comment.getPostId());

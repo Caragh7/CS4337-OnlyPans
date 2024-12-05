@@ -10,8 +10,8 @@ import java.util.List;
 public interface LikeRepository extends JpaRepository<Likes, Long> {
     List<Likes> findByPostId(Long postId);
     int countByPostId(Long postId);
-    boolean existsByPostIdAndUserId(Long postId, Long userId);
-    void deleteByPostIdAndUserId(Long postId, Long userId);
+    boolean existsByPostIdAndUserId(Long postId, String userId);
+    void deleteByPostIdAndUserId(Long postId, String userId);
 }
 
 

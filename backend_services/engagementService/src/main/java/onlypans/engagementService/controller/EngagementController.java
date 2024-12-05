@@ -20,30 +20,47 @@ public class EngagementController {
     private EngagementService engagementService;
 
     @PostMapping("/likes")
-    public ResponseEntity<Likes> likePost(@RequestParam Long postId, @RequestParam Long userId) {
-        return new ResponseEntity<>(engagementService.addLike(postId, userId), HttpStatus.CREATED);
+    public ResponseEntity<Likes> likePost(@RequestParam Long postId, Authentication authentication) {
+        String userId = authentication.getName();
+        return new ResponseEntity<>(engagementService.addLike(postId, String.valueOf(userId)), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/likes")
-    public ResponseEntity<Void> unlikePost(@RequestParam Long postId, @RequestParam Long userId) {
-        engagementService.removeLike(postId, userId);
+    public ResponseEntity<Void> unlikePost(@RequestParam Long postId, Authentication authentication) {
+        String userId = authentication.getName();
+        engagementService.removeLike(postId, String.valueOf(userId));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/likes/{postId}")
-    public ResponseEntity<Integer> getLikeCount(@PathVariable Long postId) {
+    @GetMapping("/getLikes/{postId}")
+    public ResponseEntity<Integer> getLikeCount(@PathVariable Long postId, Authentication authentication) {
         return new ResponseEntity<>(engagementService.getLikeCount(postId), HttpStatus.OK);
+    }
+
+    @PostMapping("/likes/toggle")
+    public ResponseEntity<String> toggleLike(@RequestParam Long postId, Authentication authentication) {
+        String userId = authentication.getName();
+        Likes like = engagementService.toggleLike(postId, String.valueOf(userId));
+
+        if (like == null) {
+            return new ResponseEntity<>("Like removed", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Like added", HttpStatus.CREATED);
+        }
     }
 
     @PostMapping("/comments")
     public ResponseEntity<Comments> commentOnPost(
             @RequestBody CreateCommentRequest commentRequest, Authentication authentication) {
-        return new ResponseEntity<>(engagementService.addComment(commentRequest.getPostId(), authentication.getName(), commentRequest.getCommentBody()), HttpStatus.CREATED);
+        return new ResponseEntity<>(engagementService.addComment(
+                commentRequest.getPostId(),
+                authentication.getName(),
+                commentRequest.getCommentBody()),
+                HttpStatus.CREATED);
     }
 
     @GetMapping("/comments/{postId}")
     public ResponseEntity<List<Comments>> getComments(@PathVariable Long postId) {
-        System.out.println("Fetching comments with usernames for postId: " + postId);
         return new ResponseEntity<>(engagementService.getCommentsWithUserNames(postId), HttpStatus.OK);
     }
 }

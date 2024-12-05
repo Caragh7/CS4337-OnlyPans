@@ -28,7 +28,7 @@ public class EngagementService {
         this.commentRepository = commentRepository;
         this.userServiceClient = userServiceClient;
     }
-    public Likes addLike(Long postId, Long userId) {
+    public Likes addLike(Long postId, String userId) {
         if (postId == null || userId == null) {
             throw new IllegalArgumentException("postId and userId must not be null");
         }
@@ -44,7 +44,7 @@ public class EngagementService {
         return likeRepository.save(like);
     }
 
-    public void removeLike(Long postId, Long userId) {
+    public void removeLike(Long postId, String userId) {
         if (postId == null || userId == null) {
             throw new IllegalArgumentException("postId and userId cannot be null");
         }
@@ -85,4 +85,23 @@ public class EngagementService {
 
         return comments;
     }
+
+    public Likes toggleLike(Long postId, String userId) {
+        if (postId == null || userId == null) {
+            throw new IllegalArgumentException("postId and userId can not be null");
+        }
+
+        boolean alreadyLiked = likeRepository.existsByPostIdAndUserId(postId, userId);
+
+        if (alreadyLiked) {
+            likeRepository.deleteByPostIdAndUserId(postId, userId);
+            return null;
+        } else {
+            Likes like = new Likes();
+            like.setPostId(postId);
+            like.setUserId(userId);
+            return likeRepository.save(like);
+        }
+    }
+
 }

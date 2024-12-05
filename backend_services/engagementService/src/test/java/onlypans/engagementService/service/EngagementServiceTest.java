@@ -34,7 +34,7 @@ class EngagementServiceTest {
     @Test
     void testAddLike() {
         Long postId = 1L;
-        Long userId = 2L;
+        String userId = "2L";
 
         when(likeRepository.existsByPostIdAndUserId(postId, userId)).thenReturn(false);
 
@@ -57,7 +57,7 @@ class EngagementServiceTest {
     @Test
     void testAddLikeAlreadyLiked() {
         Long postId = 1L;
-        Long userId = 2L;
+        String userId = "2L";
 
         when(likeRepository.existsByPostIdAndUserId(postId, userId)).thenReturn(true);
 
@@ -73,7 +73,7 @@ class EngagementServiceTest {
     @Test
     void testAddLikeWithNullValues() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            engagementService.addLike(null, 2L);
+            engagementService.addLike(null, "2L");
         });
         assertEquals("postId and userId must not be null", exception.getMessage());
 
@@ -86,7 +86,7 @@ class EngagementServiceTest {
     @Test
     void testRemoveLike() {
         Long postId = 1L;
-        Long userId = 2L;
+        String userId = "2L";
 
         doNothing().when(likeRepository).deleteByPostIdAndUserId(postId, userId);
 
@@ -98,7 +98,7 @@ class EngagementServiceTest {
     @Test
     void testRemoveLikeWithNullValues() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            engagementService.removeLike(null, 2L);
+            engagementService.removeLike(null, "2L");
         });
         assertEquals("postId and userId cannot be null", exception.getMessage());
 
@@ -112,7 +112,7 @@ class EngagementServiceTest {
     @Test
     void testAddComment() {
         Long postId = 1L;
-        String userId = 2L;
+        String userId = "2L";
         String text = "test comment...";
 
         Comments comment = new Comments();
@@ -138,12 +138,12 @@ class EngagementServiceTest {
 
         Comments comment1 = new Comments();
         comment1.setPostId(postId);
-        comment1.setUserId(2L);
+        comment1.setUserId("2L");
         comment1.setText("comment 1");
 
         Comments comment2 = new Comments();
         comment2.setPostId(postId);
-        comment2.setUserId(3L);
+        comment2.setUserId("3L");
         comment2.setText("comment 2");
 
         List<Comments> mockComments = Arrays.asList(comment1, comment2);

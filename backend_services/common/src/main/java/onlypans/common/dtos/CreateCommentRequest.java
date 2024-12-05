@@ -22,4 +22,5 @@ public class CreateCommentRequest {
     public void setCommentBody(String commentBody) {
         this.commentBody = commentBody;
     }
+
 }
