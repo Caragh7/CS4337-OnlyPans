@@ -112,6 +112,20 @@ services:
           memory: 512m
           cpus: "0.25"
 
+  engagement-service:
+    image: openjdk:21
+    container_name: engagement-service
+    volumes:
+      - ./backend_services/engagementService/build/libs/engagementService-1.0.0.jar:/app/service.jar
+    command: ["java", "-jar", "/app/service.jar"]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/engagement_service.env
+    networks:
+      - backend
+
   api-gateway:
     image: openjdk:21
     container_name: api-gateway

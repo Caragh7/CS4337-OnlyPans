@@ -10,7 +10,7 @@ export const KeycloakProvider = ({ children }) => {
 
     useEffect(() => {
         const keycloakInstance = new Keycloak({
-            url: 'http://localhost:8081/',
+            url: process.env.REACT_APP_KEYCLOAK_URL,
             realm: 'onlypans',
             clientId: 'onlypans-frontend',
         });

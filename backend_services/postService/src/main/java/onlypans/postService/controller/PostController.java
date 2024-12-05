@@ -1,11 +1,14 @@
 package onlypans.postService.controller;
 
+
 import onlypans.postService.entity.Post;
 import onlypans.postService.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,8 +27,11 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestBody Post post, Authentication authentication) {
-        String userId = authentication.getName();
-        System.out.println("user id" + userId);
+        Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+        String firstName = jwt.getClaimAsString("given_name");
+        String lastName = jwt.getClaimAsString("family_name");
+        post.setAuthorName(firstName + " " + lastName);
+        String userId = jwt.getId();
         return new ResponseEntity<>(postService.createPost(post, post.getMediaUrl(), userId), HttpStatus.CREATED);
 
     }
