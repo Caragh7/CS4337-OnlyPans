@@ -31,7 +31,7 @@ public class PostController {
         String firstName = jwt.getClaimAsString("given_name");
         String lastName = jwt.getClaimAsString("family_name");
         post.setAuthorName(firstName + " " + lastName);
-        String userId = jwt.getClaimAsString("sub");
+        String userId = authentication.getName();
         return new ResponseEntity<>(postService.createPost(post, post.getMediaUrl(), userId), HttpStatus.CREATED);
 
     }
@@ -58,8 +58,7 @@ public class PostController {
 
     @GetMapping("/your-feed")
     public List<Post> getYourFeed(Authentication authentication) {
-        Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
-        String userId = jwt.getClaimAsString("sub");
+        String userId = authentication.getName();
         return postService.getPostsForSubscribedCreators(userId);
     }
 
