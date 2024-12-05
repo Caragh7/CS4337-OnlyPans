@@ -5,7 +5,9 @@ import onlypans.postService.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -21,8 +23,11 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post post) {
-        return new ResponseEntity<>(postService.createPost(post, post.getMediaUrl()), HttpStatus.CREATED);
+    public ResponseEntity<Post> createPost(@RequestBody Post post, Authentication authentication) {
+        String userId = authentication.getName();
+        System.out.println("user id" + userId);
+        return new ResponseEntity<>(postService.createPost(post, post.getMediaUrl(), userId), HttpStatus.CREATED);
+
     }
 
 
@@ -44,4 +49,11 @@ public class PostController {
         List<Post> posts = postService.getAllPosts();
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
+
+    @GetMapping("/your-feed")
+    public List<Post> getYourFeed(Authentication authentication) {
+        String userId = authentication.getName();
+        return postService.getPostsForSubscribedCreators(userId);
+    }
+
 }

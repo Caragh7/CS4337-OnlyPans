@@ -12,12 +12,15 @@ import HomePage from "./pages/HomePage";
 import AllPostsPage from "./pages/AllPostsPage";
 import UpgradeToCreatorProfile from "./pages/UpgradeToCreatorPage";
 import CreatorsPage from "./pages/CreatorsPage";
+import YourFeedPage from "./pages/YourFeedPage";
+import {fetchCreatorByUserId} from "./api/CreatorServiceApi";
 
 
 
 function App() {
     const { keycloak, authenticated, initialized } = useContext(KeycloakContext);
     const [showCreatePost, setShowCreatePost] = useState(false);
+    const [isCreator, setIsCreator] = useState(false);
 
     // creating a post
     const handleToggleCreatePost = () => {
@@ -26,17 +29,35 @@ function App() {
 
 
 
-    // page placeholders
-    const Page1 = () => <h1>Page 1</h1>;
-    const Page3 = () => <h1>Page 3</h1>;
 
 // checking if a user profile exists for the current logged-in user, and if not we make one!
     const { user, loading, error } = useEnsureUserProfile(
         keycloak?.token,
         authenticated
     );
+    const token = keycloak?.token;
 
+// checking if this user is a creator
 
+    useEffect(() => {
+        const checkCreatorStatus = async () => {
+            if (!user?.id) {
+                console.error("User ID is not available");
+                return;
+            }
+            try {
+                const creatorProfile = await fetchCreatorByUserId(user.id, token);
+                setIsCreator(true); // setting isCreator to true if a profile exists
+            } catch (error) {
+                if (error.response?.status === 404) {
+                    setIsCreator(false); // no creator profile found
+                } else {
+                    console.error("Error checking creator status:", error);
+                }
+            }
+        };
+       checkCreatorStatus();
+    }, [authenticated, user, token]);
 
     if (!initialized) {
         return <div>Loading...</div>;
@@ -58,7 +79,7 @@ function App() {
 
     return (
         <Router>
-            <ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost} />
+            <ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost} isCreator={isCreator} />
             <Routes>
                 <Route
                     path="/profile"
@@ -66,16 +87,25 @@ function App() {
                 />
                 <Route
                     path="/upgrade"
-                    element={<UpgradeToCreatorProfile keycloak={keycloak} user={user} authenticated={authenticated} />}
+                    element={<UpgradeToCreatorProfile keycloak={keycloak} user={user} authenticated={authenticated} isCreator={isCreator} setIsCreator={setIsCreator}/>}
                 />
 
 
                 {/* Main page with buttons */}
                 <Route path="/" element={<HomePage />} />
 
-                {/* Placeholder routes for the other pages */}
-                <Route path="/page3" element={<Page3 />} />
-                <Route path="/creators" element={<CreatorsPage keycloak={keycloak} authenticated={authenticated} user={user} />} />
+                {/* routes for the other pages */}
+                <Route path="/yourFeed" element={<YourFeedPage
+                    keycloak={keycloak}
+                    authenticated={authenticated}
+                    user={user}
+                    showCreatePost={showCreatePost}
+                    handleToggleCreatePost={handleToggleCreatePost}
+                />} />
+                <Route path="/creators" element={<CreatorsPage
+                    keycloak={keycloak}
+                    authenticated={authenticated}
+                    user={user} />} />
                 <Route path="/allPosts" element={<AllPostsPage
                     keycloak={keycloak}
                     authenticated={authenticated}

@@ -7,7 +7,7 @@ const HomePage = () => {
     const navigate = useNavigate();
 
     const buttons = [
-        { name: "Your Feed", path: "/page1", backgroundImage: "url('/yourfeed.jpg')" },
+        { name: "Your Feed", path: "/yourFeed", backgroundImage: "url('/yourfeed.jpg')" },
         { name: "All Posts", path: "/allPosts", backgroundImage: "url('/allposts.jpg')" },
         { name: "Creators", path: "/creators", backgroundImage: "url('/creators.jpg')" },
     ];

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {jwtDecode} from "jwt-decode";
-import { getUserById, createUser } from "../api/UserServiceApi";
+import {getUserById, createUser, getUserByUserId} from "../api/UserServiceApi";
 
 const extractUserDetailsFromToken = (token) => {
     const decoded = jwtDecode(token);
@@ -28,7 +28,7 @@ const useEnsureUserProfile = (token, authenticated) => {
                 const userDetails = extractUserDetailsFromToken(token);
                 console.log(userDetails)
 
-                let user = await getUserById(userDetails.id, token);
+                let user = await getUserByUserId(userDetails.id, token);
 
                 if (!user) {
                     user = await createUser(userDetails, token);

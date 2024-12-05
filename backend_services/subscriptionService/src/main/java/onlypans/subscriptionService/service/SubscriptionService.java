@@ -127,6 +127,10 @@ public class SubscriptionService {
         return creatorServiceClient.getCreatorProfile(userId);
     }
 
+    public List<Long> getCreatorProfileIdsForUser(String userId) {
+        return subscriptionRepository.findCreatorProfileIdsByUserId(userId);
+    }
+
     public void handleCheckoutSessionCompleted(StripeObject stripeObject) {
         if (stripeObject instanceof com.stripe.model.checkout.Session session) {
             String subscriptionId = session.getSubscription();

@@ -102,5 +102,10 @@ public class SubscriptionController {
         return ResponseEntity.ok("Success");
     }
 
+    @GetMapping("/creator-ids")
+    public List<Long> getCreatorProfileIdsForUser(@RequestParam("userId") String userId) {
+        return subscriptionService.getCreatorProfileIdsForUser(userId);
+    }
+
 }
 

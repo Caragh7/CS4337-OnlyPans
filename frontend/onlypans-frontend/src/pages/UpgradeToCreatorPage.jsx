@@ -3,33 +3,13 @@ import axios from "axios";
 import { upgradeToCreatorProfileReq } from "../api/UserServiceApi";
 import { deleteCreatorProfile, fetchCreatorByUserId } from "../api/CreatorServiceApi";
 
-const UpgradeToCreatorProfile = ({ keycloak, authenticated, user }) => {
+const UpgradeToCreatorProfile = ({ keycloak, authenticated, user, isCreator, setIsCreator  }) => {
     const [status, setStatus] = useState("");
-    const [isCreator, setIsCreator] = useState(false);
     const [price, setPrice] = useState(""); // New state for the price input
     const [isValidPrice, setIsValidPrice] = useState(false); // To track if the price is valid
 
     const token = keycloak?.token;
 
-    useEffect(() => {
-        const checkCreatorStatus = async () => {
-            try {
-                const creatorProfile = await fetchCreatorByUserId(user.id, token);
-                setIsCreator(!!creatorProfile); // setting isCreator to true if a profile exists
-            } catch (error) {
-                if (error.response?.status === 404) {
-                    setIsCreator(false); // no creator profile found
-                } else {
-                    console.error("Error checking creator status:", error);
-                }
-            }
-        };
-        if (authenticated && user) {
-            checkCreatorStatus();
-        } else {
-            console.error("User is not authenticated");
-        }
-    }, [authenticated, user, token]);
 
     const handlePriceChange = (event) => {
         const inputPrice = event.target.value;

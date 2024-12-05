@@ -5,11 +5,13 @@ import { Card, CardContent, CardMedia, Typography, Avatar, Box, TextField, Butto
 import placeholder from '../assets/placeholder.jpg';
 import user from '../assets/user.png';
 
-function CreatePost({ open, onClose }) {
+function CreatePost({ open, onClose, keycloak }) {
     const [content, setContent] = useState('');
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(placeholder);
     const [successOpen, setSuccessOpen] = useState(false);
+
+
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -32,12 +34,16 @@ function CreatePost({ open, onClose }) {
         try {
             const fileName = image.name;
             const { data: presignedUrl } = await axios.get('http://localhost:8080/media/presigned-url', {
-                params: { fileName }
+                params: { fileName },
+                headers: {
+                    Authorization: `Bearer ${keycloak.token}`,
+                },
             });
+
 
             await axios.put(presignedUrl, image, {
                 headers: {
-                    'Content-Type': image.type
+                    'Content-Type': image.type,
                 }
             });
 
@@ -47,7 +53,11 @@ function CreatePost({ open, onClose }) {
                 mediaUrl: fileName
             };
 
-            const { data: createdPost } = await axios.post('http://localhost:8080/posts', postContent);
+            const { data: createdPost } = await axios.post('http://localhost:8080/posts', {
+                headers: {
+                    Authorization: `Bearer ${keycloak.token}`,
+                }
+            }, postContent);
             console.log("Created Post:", createdPost);
 
             setContent('');
@@ -55,6 +65,8 @@ function CreatePost({ open, onClose }) {
             setPreview(placeholder);
             setSuccessOpen(true);
             onClose();
+
+
 
         } catch (error) {
             console.error('Error creating post:', error);

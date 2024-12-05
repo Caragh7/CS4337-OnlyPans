@@ -18,18 +18,21 @@ import { Link } from "react-router-dom";
 import {useNavigate} from "react-router-dom";
 import {useContext} from "react";
 import {KeycloakContext} from "./KeyCloakContext";
+import { useLocation } from "react-router-dom";
 
 
 
 const pages = ['']; // Placeholder
 const settings = ['Profile', 'Logout', 'Upgrade'];
 
-function ResponsiveAppBar({ onToggleCreatePost }) {
+function ResponsiveAppBar({ onToggleCreatePost, isCreator }) {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const { keycloak } = useContext(KeycloakContext);
     const navigate = useNavigate();
+    const location = useLocation();
 
+    const enableCreatePost = location.pathname === "/allPosts" || location.pathname === "/yourFeed" && isCreator;
 
     const handleProfileClick = () => {
         handleCloseUserMenu(); // Close the dropdown
@@ -152,10 +155,13 @@ function ResponsiveAppBar({ onToggleCreatePost }) {
                             </Button>
                         ))}
                     </Box>
-
+              <>
+              { enableCreatePost && (
                     <Button variant="contained" color="primary" onClick={onToggleCreatePost} sx={{ mr: 2 }}>
                         Create Post
                     </Button>
+                  )}
+              </>
 
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
