@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const getPresignedUrl = async (fileName) => {
     try {
-        const { data } = await axios.get(`${process.env.REACT_APP_MEDIA_SERVICE_URL}/media/presigned-url`, {
+        const { data } = await axios.get(`${process.env.REACT_APP_API_GATEWAY_URL}/media/presigned-url`, {
             params: { fileName },
         });
         return data;
@@ -27,7 +27,7 @@ export const uploadFile = async (presignedUrl, file) => {
 
 export const createPost = async (postContent) => {
     try {
-        const { data } = await axios.post(`${process.env.REACT_APP_POST_SERVICE_URL}/posts`, postContent);
+        const { data } = await axios.post(`${process.env.REACT_APP_API_GATEWAY_URL}/posts`, postContent);
         return data;
     } catch (error) {
         console.error('Error creating post:', error);
