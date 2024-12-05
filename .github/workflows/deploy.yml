@@ -11,20 +11,41 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      # Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Debug Directory Structure
+      - name: Debug Directory Structure
+        run: |
+          echo "Current Directory: $(pwd)"
+          echo "Repository Contents:"
+          ls -R
+
+      # Copy Environment Files
       - name: Copy Environment Files
         run: |
           mkdir -p ./configs
           cp -r /home/github-runner/envs/* ./configs/
 
+      # Set Up Java
       - name: Set Up Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
 
+      # Ensure gradlew is executable
+      - name: Ensure gradlew is Executable
+        run: |
+          chmod +x backend_services/subscriptionService/gradlew
+          chmod +x backend_services/userService/gradlew
+          chmod +x backend_services/postService/gradlew
+          chmod +x backend_services/mediaService/gradlew
+          chmod +x backend_services/creatorService/gradlew
+          chmod +x api_gateway/gradlew
+
+      # Build Backend JARs
       - name: Build JARs
         run: |
           cd backend_services/subscriptionService && ./gradlew clean build -x test && cd -
@@ -33,6 +54,12 @@ jobs:
           cd backend_services/mediaService && ./gradlew clean build -x test && cd -
           cd backend_services/creatorService && ./gradlew clean build -x test && cd -
           cd api_gateway && ./gradlew clean build -x test && cd -
+
+      # Debug Built Files
+      - name: Debug Built JARs
+        run: |
+          echo "Built JARs:"
+          find . -name "*.jar" -print
 
       # Deploy with Docker Compose
       - name: Deploy with Docker Compose
