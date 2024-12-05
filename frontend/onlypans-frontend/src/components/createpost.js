@@ -1,11 +1,10 @@
-import axios from 'axios';
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardMedia, Typography, Avatar, Box, TextField, Button, Modal, Backdrop, Snackbar, Alert } from '@mui/material';
+import { getPresignedUrl, uploadFile, createPost } from '../api/PostServiceApi';
 import placeholder from '../assets/placeholder.jpg';
 import user from '../assets/user.png';
 
-function CreatePost({ open, onClose }) {
+function CreatePost({ open, onClose, token }) {
     const [content, setContent] = useState('');
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(placeholder);
@@ -27,28 +26,18 @@ function CreatePost({ open, onClose }) {
             return;
         }
 
-
-        console.log("Requesting presigned URL")
         try {
             const fileName = image.name;
-            const { data: presignedUrl } = await axios.get('http://localhost:8080/media/presigned-url', {
-                params: { fileName }
-            });
-
-            await axios.put(presignedUrl, image, {
-                headers: {
-                    'Content-Type': image.type
-                }
-            });
+            const presignedUrl = await getPresignedUrl(fileName, token);
+            await uploadFile(presignedUrl, image);
 
             const postContent = {
                 contentDescription: content,
                 authorName: 'someone',
-                mediaUrl: fileName
+                mediaUrl: fileName,
             };
 
-            const { data: createdPost } = await axios.post('http://localhost:8080/posts', postContent);
-            console.log("Created Post:", createdPost);
+            await createPost(postContent, token);
 
             setContent('');
             setImage(null);
@@ -61,7 +50,6 @@ function CreatePost({ open, onClose }) {
             alert('There was an error creating the post.');
         }
     };
-
 
     const handleCloseSuccess = () => {
         setSuccessOpen(false);
@@ -145,7 +133,6 @@ function CreatePost({ open, onClose }) {
                     </Card>
                 </Box>
             </Modal>
-
 
             <Snackbar
                 open={successOpen}
