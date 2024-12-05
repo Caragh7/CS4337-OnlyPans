@@ -25,16 +25,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    deploy:
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 2g
-          cpus: "1.0"
-        reservations:
-          memory: 1g
-          cpus: "0.5"
 
   # Consul service
   consul:
@@ -52,17 +42,6 @@ services:
       - keycloak
     networks:
       - backend
-    deploy:
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 1g
-          cpus: "0.5"
-        reservations:
-          memory: 512m
-          cpus: "0.25"
-
 
   subscription-service:
     image: openjdk:21
@@ -76,17 +55,6 @@ services:
       - ./configs/subscription_service.env
     networks:
       - backend
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 1g
-          cpus: "0.5"
-        reservations:
-          memory: 512m
-          cpus: "0.25"
 
   user-service:
     image: openjdk:21
@@ -100,17 +68,6 @@ services:
       - ./configs/user_service.env
     networks:
       - backend
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 1g
-          cpus: "0.5"
-        reservations:
-          memory: 512m
-          cpus: "0.25"
 
   engagement-service:
     image: openjdk:21
@@ -143,16 +100,6 @@ services:
       - 8080:8080
     networks:
       - backend
-    deploy:
-      resources:
-        limits:
-          memory: 1g
-          cpus: "0.5"
-        reservations:
-          memory: 512m
-          cpus: "0.25"
-      restart_policy:
-        condition: on-failure
 
   post-service:
     image: openjdk:21
@@ -166,19 +113,6 @@ services:
       - ./configs/post_service.env
     networks:
       - backend
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 1g
-          cpus: "0.75"
-        reservations:
-          memory: 512m
-          cpus: "0.25"
-
-
 
   media-service:
     image: openjdk:21
@@ -192,17 +126,6 @@ services:
       - ./configs/media_service.env
     networks:
       - backend
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 2g
-          cpus: "1.0"
-        reservations:
-          memory: 1g
-          cpus: "0.5"
 
   creator-service:
     image: openjdk:21
@@ -216,17 +139,6 @@ services:
       - ./configs/creator_service.env
     networks:
       - backend
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 1g
-          cpus: "0.5"
-        reservations:
-          memory: 512m
-          cpus: "0.25"
 
   frontend:
     build:
