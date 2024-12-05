@@ -1,0 +1,41 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - livemode
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Copy Environment Files
+        run: |
+          mkdir -p ./configs
+          cp /home/github-actions/envs/* ./configs/
+
+      - name: Set Up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build JARs
+        run: |
+          cd backend_services/subscriptionService && ./gradlew clean build -x test && cd -
+          cd backend_services/userService && ./gradlew clean build -x test && cd -
+          cd backend_services/postService && ./gradlew clean build -x test && cd -
+          cd backend_services/mediaService && ./gradlew clean build -x test && cd -
+          cd backend_services/creatorService && ./gradlew clean build -x test && cd -
+          cd api_gateway && ./gradlew clean build -x test && cd -
+
+      # Deploy with Docker Compose
+      - name: Deploy with Docker Compose
+        run: |
+          docker compose -p onlypans down
+          docker compose -p onlypans up -d
