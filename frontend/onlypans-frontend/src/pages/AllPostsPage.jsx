@@ -54,6 +54,7 @@ const AllPostsPage = ({keycloak, authenticated, user, showCreatePost, handleTogg
                     open={showCreatePost}
                     onClose={handleToggleCreatePost}
                     onPostCreate={handlePostCreate}
+                    token={token}
                 />
             </div>
             <div style={styles.scrollableContainer}>

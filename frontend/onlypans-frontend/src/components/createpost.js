@@ -4,7 +4,7 @@ import { getPresignedUrl, uploadFile, createPost } from '../api/PostServiceApi';
 import placeholder from '../assets/placeholder.jpg';
 import user from '../assets/user.png';
 
-function CreatePost({ open, onClose }) {
+function CreatePost({ open, onClose, token }) {
     const [content, setContent] = useState('');
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(placeholder);
@@ -28,7 +28,7 @@ function CreatePost({ open, onClose }) {
 
         try {
             const fileName = image.name;
-            const presignedUrl = await getPresignedUrl(fileName);
+            const presignedUrl = await getPresignedUrl(fileName, token);
             await uploadFile(presignedUrl, image);
 
             const postContent = {
@@ -37,7 +37,7 @@ function CreatePost({ open, onClose }) {
                 mediaUrl: fileName,
             };
 
-            await createPost(postContent);
+            await createPost(postContent, token);
 
             setContent('');
             setImage(null);
