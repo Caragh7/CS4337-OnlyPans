@@ -27,7 +27,7 @@ jobs:
         run: |
           mkdir -p ./configs
           cp -r /home/github-runner/envs/* ./configs/
-          cp ./configs/docker-compose-static.yml ./docker-compose.yml
+          cp ./configs/docker-compose.yml ./
 
       # Set Up Java
       - name: Set Up Java
