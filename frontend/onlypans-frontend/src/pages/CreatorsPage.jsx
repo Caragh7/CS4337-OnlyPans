@@ -63,7 +63,9 @@ const CreatorsPage = ({ keycloak, authenticated, user }) => {
                     padding: "20px",
                 }}
             >
-                {creators.map((creator) => (
+                {creators
+                    .filter((creator) => creator.userId !== user.id)
+                    .map((creator) => (
                     <CreatorCard
                         token={token}
                         onSubscribe={handleSubscription}

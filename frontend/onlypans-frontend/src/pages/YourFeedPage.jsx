@@ -2,11 +2,26 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {fetchYourFeed} from "../api/PostServiceApi";
 import CreatePost from "../components/createpost";
+import PostCard from "../components/post";
 
 const YourFeedPage = ({ user, keycloak, authenticated, showCreatePost, handleToggleCreatePost }) => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const styles = {
+        scrollableContainer: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            padding: '20px',
+            height: '100%',
+            overflowY: 'scroll',
+            scrollbarWidth: 'thin',
+            gap: '20px',
+        },
+    };
 
 
     const handlePostCreate = (newPost) => {
@@ -53,14 +68,12 @@ const YourFeedPage = ({ user, keycloak, authenticated, showCreatePost, handleTog
             {posts.length === 0 ? (
                 <p>No posts to show. Subscribe to some creators!</p>
             ) : (
-                <div>
-                    {posts.map((post) => (
-                        <div key={post.id} className="post-card">
-                            <h2>{post.title}</h2>
-                            <p>{post.content}</p>
-                            <img src={post.mediaUrl} alt={post.title} />
-                        </div>
-                    ))}
+                <div style={styles.scrollableContainer}>
+                    {Array.isArray(posts) ? (
+                        posts.map((post) => <PostCard key={post.id} post={post}/>)
+                    ) : (
+                        <p>No posts available</p>
+                    )}
                 </div>
             )}
         </div>
