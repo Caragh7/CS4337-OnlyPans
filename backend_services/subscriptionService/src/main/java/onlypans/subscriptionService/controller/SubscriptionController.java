@@ -103,7 +103,7 @@ public class SubscriptionController {
     }
 
     @GetMapping("/creator-ids")
-    public List<Long> getCreatorProfileIdsForUser(@RequestParam("userId") String userId) {
+    public List<Long> getCreatorProfileIdsForUser(@RequestParam String userId) {
         return subscriptionService.getCreatorProfileIdsForUser(userId);
     }
 

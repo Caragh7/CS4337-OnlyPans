@@ -7,6 +7,7 @@ import user from '../assets/user.png';
 import { KeycloakContext } from "./KeyCloakContext";
 
 function CreatePost({ open, onClose }) {
+    const { keycloak } = useContext(KeycloakContext);
     const [content, setContent] = useState('');
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(placeholder);
