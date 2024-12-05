@@ -17,7 +17,7 @@ jobs:
       - name: Copy Environment Files
         run: |
           mkdir -p ./configs
-          cp /home/github-runner/envs/* ./configs/
+          cp -r /home/github-runner/envs/* ./configs/
 
       - name: Set Up Java
         uses: actions/setup-java@v3
