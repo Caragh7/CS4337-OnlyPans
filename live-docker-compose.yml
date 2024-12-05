@@ -1,0 +1,149 @@
+version: '3.8'
+
+services:
+  # Keycloak service
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command: start-dev --import-realm --hostname-strict-https --hostname https://uni-onlypans-keycloak.kobos.studio --http-port 8081
+    env_file:
+      - ./configs/keycloak.env
+    volumes:
+      - ./configs/keycloak:/opt/keycloak/data/import
+    networks:
+      - captain-overlay-network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'exec 3<>/dev/tcp/localhost/8081; echo -e "GET /health/ready HTTP/1.1\nhost: localhost:8080\n" >&3; timeout --preserve-status 1 cat <&3 | grep -m 1 status | grep -m 1 UP; ERROR=$?; exec 3<&-; exec 3>&-; exit $ERROR'
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Consul service
+  consul:
+    image: hashicorp/consul:latest
+    container_name: consul
+    restart: always
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    volumes:
+      - consul_data:/consul/data
+    command: agent -dev -ui -bind=0.0.0.0 -client=0.0.0.0 -advertise=10.0.1.89
+    depends_on:
+      - keycloak
+    networks:
+      - captain-overlay-network
+
+  subscription-service:
+    image: openjdk:21
+    container_name: subscription-service
+    volumes:
+      - ./backend_services/subscriptionService/build/libs/subscriptionService-1.0.0.jar:/app/service.jar
+    command: ["java", "-jar", "/app/service.jar"]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/subscription_service.env
+    networks:
+      - captain-overlay-network
+
+  user-service:
+    image: openjdk:21
+    container_name: user-service
+    volumes:
+      - ./backend_services/userService/build/libs/userService-1.0.0.jar:/app/service.jar
+    command: ["java", "-jar", "/app/service.jar"]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/user_service.env
+    networks:
+      - captain-overlay-network
+
+  api-gateway:
+    image: openjdk:21
+    container_name: api-gateway
+    volumes:
+      - ./api_gateway/build/libs/api_gateway-1.0.0.jar:/app/service.jar
+    command: ["java", "-jar", "/app/service.jar"]
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      consul:
+        condition: service_started
+    env_file:
+      - ./configs/gateway.env
+    ports:
+      - 8080:8080
+    networks:
+      - captain-overlay-network
+
+  post-service:
+    image: openjdk:21
+    container_name: post-service
+    volumes:
+      - ./backend_services/postService/build/libs/postService-1.0.0.jar:/app/service.jar
+    command: ["java", "-jar", "/app/service.jar"]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/post_service.env
+    networks:
+      - captain-overlay-network
+
+  media-service:
+    image: openjdk:21
+    container_name: media-service
+    volumes:
+      - ./backend_services/mediaService/build/libs/mediaService-1.0.0.jar:/app/service.jar
+    command: [ "java", "-jar", "/app/service.jar" ]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/media_service.env
+    networks:
+      - captain-overlay-network
+
+  creator-service:
+    image: openjdk:21
+    container_name: creator-service
+    volumes:
+      - ./backend_services/creatorService/build/libs/creatorService-1.0.0.jar:/app/service.jar
+    command: [ "java", "-jar", "/app/service.jar" ]
+    depends_on:
+      - consul
+      - api-gateway
+    env_file:
+      - ./configs/creator_service.env
+    networks:
+      - captain-overlay-network
+
+  frontend:
+    build:
+      context: ./frontend/onlypans-frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    volumes:
+      - ./frontend/onlypans-frontend:/app
+      - /app/node_modules
+    env_file:
+      - ./configs/frontend.env
+    depends_on:
+      - api-gateway
+    networks:
+      - captain-overlay-network
+
+networks:
+  captain-overlay-network:
+    external: true
+
+volumes:
+  consul_data:

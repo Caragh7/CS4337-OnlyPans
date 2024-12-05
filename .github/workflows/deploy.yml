@@ -1,0 +1,65 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - livemode
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Debug Directory Structure
+      - name: Debug Directory Structure
+        run: |
+          echo "Current Directory: $(pwd)"
+          echo "Repository Contents:"
+          ls -R
+
+      # Copy Environment Files
+      - name: Copy Environment Files
+        run: |
+          mkdir -p ./configs
+          cp -r /home/github-runner/envs/* ./configs/
+          mv ./live-docker-compose.yml ./docker-compose.yml
+
+      # Set Up Java
+      - name: Set Up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # Ensure gradlew is executable
+      - name: Ensure gradlew is Executable
+        run: |
+          chmod +x gradlew
+          find . -name "gradlew" -exec chmod +x {} \;
+
+      # Build Backend JARs
+      - name: Build JARs
+        run: |
+          ./gradlew -p backend_services/subscriptionService clean build -x test || echo "No gradlew in subscriptionService"
+          ./gradlew -p backend_services/userService clean build -x test || echo "No gradlew in userService"
+          ./gradlew -p backend_services/postService clean build -x test || echo "No gradlew in postService"
+          ./gradlew -p backend_services/mediaService clean build -x test || echo "No gradlew in mediaService"
+          ./gradlew -p backend_services/creatorService clean build -x test || echo "No gradlew in creatorService"
+          ./gradlew -p api_gateway clean build -x test || echo "No gradlew in api_gateway"
+
+      # Debug Built Files
+      - name: Debug Built JARs
+        run: |
+          echo "Built JARs:"
+          find . -name "*.jar" -print
+
+      # Deploy with Docker Compose + restart our reverse proxy
+      - name: Deploy with Docker Compose
+        run: |
+          docker compose -p onlypans down
+          docker compose -p onlypans up --build -d
