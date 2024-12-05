@@ -58,8 +58,9 @@ jobs:
           echo "Built JARs:"
           find . -name "*.jar" -print
 
-      # Deploy with Docker Compose
+      # Deploy with Docker Compose + restart our reverse proxy
       - name: Deploy with Docker Compose
         run: |
           docker compose -p onlypans down
           docker compose -p onlypans up -d
+          docker restart $(docker ps --filter "name=uni-onlypans-frontend" --format "{{.ID}}" | head -n 1) 
