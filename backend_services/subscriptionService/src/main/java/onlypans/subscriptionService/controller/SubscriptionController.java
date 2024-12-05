@@ -46,9 +46,9 @@ public class SubscriptionController {
         return createdPrice.getId();
     }
 
-    @GetMapping("/test")
-    public String get() {
-        return "Test";
+    @GetMapping("/")
+    public List<Subscription> getAll(Authentication authentication) {
+        return subscriptionService.getUserSubscriptions(authentication.getName());
     }
 
     @PostMapping("/subscribe")
