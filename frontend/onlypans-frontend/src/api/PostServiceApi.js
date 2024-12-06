@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-import axios from 'axios';
-
 export const getPresignedUrl = async (fileName, token) => {
     try {
         const { data } = await axios.get(`${process.env.REACT_APP_API_GATEWAY_URL}/media/presigned-url`, {
