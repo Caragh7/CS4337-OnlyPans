@@ -23,7 +23,6 @@ services:
       retries: 5
       start_period: 30s
     deploy:
-      replicas: 2
       restart_policy:
         condition: on-failure
       resources:
@@ -51,7 +50,6 @@ services:
 
   subscription-service:
     image: openjdk:21
-    container_name: subscription-service
     volumes:
       - ./backend_services/subscriptionService/build/libs/subscriptionService-1.0.0.jar:/app/service.jar
     command: ["java", "-jar", "/app/service.jar"]
@@ -76,7 +74,6 @@ services:
 
   user-service:
     image: openjdk:21
-    container_name: user-service
     volumes:
       - ./backend_services/userService/build/libs/userService-1.0.0.jar:/app/service.jar
     command: ["java", "-jar", "/app/service.jar"]
@@ -117,7 +114,6 @@ services:
     networks:
       - captain-overlay-network
     deploy:
-      replicas: 2
       restart_policy:
         condition: on-failure
       resources:
@@ -130,7 +126,6 @@ services:
 
   engagement-service:
     image: openjdk:21
-    container_name: engagement-service
     volumes:
       - ./backend_services/engagementService/build/libs/engagementService-1.0.0.jar:/app/service.jar
     command: [ "java", "-jar", "/app/service.jar" ]
@@ -155,7 +150,6 @@ services:
 
   post-service:
     image: openjdk:21
-    container_name: post-service
     volumes:
       - ./backend_services/postService/build/libs/postService-1.0.0.jar:/app/service.jar
     command: ["java", "-jar", "/app/service.jar"]
@@ -180,7 +174,6 @@ services:
 
   media-service:
     image: openjdk:21
-    container_name: media-service
     volumes:
       - ./backend_services/mediaService/build/libs/mediaService-1.0.0.jar:/app/service.jar
     command: [ "java", "-jar", "/app/service.jar" ]
@@ -205,7 +198,6 @@ services:
 
   creator-service:
     image: openjdk:21
-    container_name: creator-service
     volumes:
       - ./backend_services/creatorService/build/libs/creatorService-1.0.0.jar:/app/service.jar
     command: [ "java", "-jar", "/app/service.jar" ]
