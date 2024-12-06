@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -30,7 +31,9 @@ public class PostController {
         String firstName = jwt.getClaimAsString("given_name");
         String lastName = jwt.getClaimAsString("family_name");
         post.setAuthorName(firstName + " " + lastName);
-        return new ResponseEntity<>(postService.createPost(post, post.getMediaUrl()), HttpStatus.CREATED);
+        String userId = authentication.getName();
+        return new ResponseEntity<>(postService.createPost(post, post.getMediaUrl(), userId), HttpStatus.CREATED);
+
     }
 
 
@@ -52,4 +55,11 @@ public class PostController {
         List<Post> posts = postService.getAllPosts();
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
+
+    @GetMapping("/your-feed")
+    public List<Post> getYourFeed(Authentication authentication) {
+        String userId = authentication.getName();
+        return postService.getPostsForSubscribedCreators(userId);
+    }
+
 }

@@ -1,99 +1,106 @@
 package onlypans.postService.controller;
 
 import onlypans.postService.entity.Post;
-import onlypans.postService.security.TestSecurityConfig;
 import onlypans.postService.service.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
-@Import(TestSecurityConfig.class)
-@SpringBootTest(properties = {
-        "spring.datasource.url=jdbc:h2:mem:test",
-        "spring.datasource.driver-class-name=org.h2.Driver",
-        "spring.jpa.hibernate.ddl-auto=create-drop",
-        "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
-        "media.service.url=http://localhost:8082",
-        "spring.cloud.consul.enabled=false",
-        "spring.cloud.consul.discovery.enabled=false",
-        "spring.cloud.consul.config.enabled=false"
-})
-@AutoConfigureMockMvc
 class PostControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private PostService postService;
 
-    @MockBean
-    private JwtDecoder jwtDecoder;
+    @Mock
+    private Authentication authentication;
+
+    @InjectMocks
+    private PostController postController;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
-    @WithMockUser(username = "user123")
-    void testGetPostById() throws Exception {
+    void testCreatePost() throws Exception {
+        Post requestPost = new Post();
+        requestPost.setContentDescription("Test Post");
+        requestPost.setMediaUrl("url1");
+
+        Post createdPost = new Post();
+        createdPost.setId(1L);
+        createdPost.setContentDescription("Test Post");
+        createdPost.setMediaUrl("url1");
+
+        // Mock JwtAuthenticationToken
+        Jwt jwt = Jwt.withTokenValue("mock-token")
+                .header("alg", "none")
+                .claim("sub", "user123")
+                .claim("given_name", "John")
+                .claim("family_name", "Doe")
+                .build();
+        JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(jwt);
+
+        // Mock behavior
+        when(postService.createPost(any(Post.class), eq("url1"), eq("user123"))).thenReturn(createdPost);
+
+        // Call controller method
+        Post responsePost = postController.createPost(requestPost, authenticationToken).getBody();
+
+        // Assertions
+        assertEquals(createdPost.getId(), responsePost.getId());
+        assertEquals("Test Post", responsePost.getContentDescription());
+        verify(postService, times(1)).createPost(any(Post.class), eq("url1"), eq("user123"));
+    }
+
+
+    @Test
+    void testGetAllPosts() {
         Post post = new Post();
         post.setId(1L);
-        post.setContentDescription("Test Description");
-        post.setAuthorName("user123");
+        post.setContentDescription("Test Post");
 
-        when(postService.getPostById(1L)).thenReturn(java.util.Optional.of(post));
+        when(postService.getAllPosts()).thenReturn(Collections.singletonList(post));
 
-        mockMvc.perform(get("/posts/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.contentDescription").value("Test Description"))
-                .andExpect(jsonPath("$.authorName").value("user123"));
+        List<Post> posts = postController.getAllPosts().getBody();
 
-        verify(postService, times(1)).getPostById(1L);
-    }
-
-    @Test
-    @WithMockUser(username = "user123")
-    void testGetPostByIdNotFound() throws Exception {
-        when(postService.getPostById(1L)).thenReturn(java.util.Optional.empty());
-
-        mockMvc.perform(get("/posts/1"))
-                .andExpect(status().isNotFound());
-
-        verify(postService, times(1)).getPostById(1L);
-    }
-
-    @Test
-    @WithMockUser(username = "user123")
-    void testGetAllPosts() throws Exception {
-        mockMvc.perform(get("/posts"))
-                .andExpect(status().isOk());
-
+        assertEquals(1, posts.size());
+        assertEquals("Test Post", posts.get(0).getContentDescription());
         verify(postService, times(1)).getAllPosts();
+    }
+
+    @Test
+    void testGetPostById() {
+        Post post = new Post();
+        post.setId(1L);
+        post.setContentDescription("Test Post");
+
+        when(postService.getPostById(1L)).thenReturn(Optional.of(post));
+
+        Post responsePost = postController.getPostById(1L).getBody();
+
+        assertEquals("Test Post", responsePost.getContentDescription());
+        verify(postService, times(1)).getPostById(1L);
+    }
+
+    @Test
+    void testGetPostByIdNotFound() {
+        when(postService.getPostById(1L)).thenReturn(Optional.empty());
+
+        assertEquals(404, postController.getPostById(1L).getStatusCodeValue());
+        verify(postService, times(1)).getPostById(1L);
     }
 }

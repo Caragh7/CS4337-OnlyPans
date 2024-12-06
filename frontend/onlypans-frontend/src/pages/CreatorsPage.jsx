@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchAllCreators } from "../api/CreatorServiceApi";
 import { subscribe } from "../api/SubscriptionApi";
 import { loadStripe } from "@stripe/stripe-js";
+import {Box, CircularProgress} from "@mui/material";
 
 const CreatorsPage = ({ keycloak, authenticated, user }) => {
     const [creators, setCreators] = useState([]);
@@ -50,7 +51,13 @@ const CreatorsPage = ({ keycloak, authenticated, user }) => {
         }
     }, [token]);
 
-    if (loading) return <p>Loading...</p>;
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     return (
         <div>
@@ -63,7 +70,9 @@ const CreatorsPage = ({ keycloak, authenticated, user }) => {
                     padding: "20px",
                 }}
             >
-                {creators.map((creator) => (
+                {creators
+                    .filter((creator) => creator.userId !== user.id)
+                    .map((creator) => (
                     <CreatorCard
                         token={token}
                         onSubscribe={handleSubscription}

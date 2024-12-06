@@ -1,41 +1,38 @@
-import React, { useEffect, useState } from "react";
-import PostCard from "../components/PostCard";
+import React, { useEffect, useState } from 'react';
+import { fetchYourFeed } from "../api/PostServiceApi";
 import CreatePost from "../components/CreatePost";
-import { fetchPosts, fetchYourFeed } from "../api/PostServiceApi";
-import {Box, CircularProgress, Typography} from "@mui/material";
+import PostCard from "../components/PostCard";
+import { CircularProgress, Box, Typography } from '@mui/material';
 
-const AllPostsPage = ({ keycloak, authenticated, user, showCreatePost, handleToggleCreatePost }) => {
+const YourFeedPage = ({ user, keycloak, authenticated, showCreatePost, handleToggleCreatePost }) => {
     const [posts, setPosts] = useState([]);
-    const [yourFeed, setYourFeed] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    console.log(user, authenticated, keycloak)
 
     const handlePostCreate = (newPost) => {
         setPosts((prevPosts) => [newPost, ...prevPosts]);
     };
 
-    const token = keycloak?.token;
-
     useEffect(() => {
-        const loadPostsAndFeed = async () => {
-            if (token) {
+        const fetchFeed = async () => {
+            if (authenticated && user) {
                 try {
-                    const [fetchedPosts, fetchedFeed] = await Promise.all([
-                        fetchPosts(token),
-                        fetchYourFeed(token),
-                    ]);
-                    setPosts(fetchedPosts);
-                    setYourFeed(fetchedFeed.map((post) => post.id));
-                } catch (error) {
-                    setError(error.message || "Failed to fetch posts.");
+                    const data = await fetchYourFeed(keycloak.token);
+                    setPosts(data);
+                } catch (err) {
+                    setError(err.message || "Failed to fetch feed");
                 } finally {
                     setLoading(false);
                 }
+            } else {
+                console.warn("User or authentication state is missing.");
             }
         };
 
-        loadPostsAndFeed();
-    }, [token]);
+        fetchFeed();
+    }, [authenticated, user, keycloak.token]);
 
     if (loading) {
         return (
@@ -59,27 +56,19 @@ const AllPostsPage = ({ keycloak, authenticated, user, showCreatePost, handleTog
                 open={showCreatePost}
                 onClose={handleToggleCreatePost}
                 onPostCreate={handlePostCreate}
-                token={token}
+                keycloak={keycloak}
             />
             <Typography variant="h4" fontWeight="bold" marginBottom="20px" textAlign="center">
-                All Posts
+                Your Feed
             </Typography>
             {posts.length === 0 ? (
                 <Typography variant="h6" textAlign="center">
-                    No posts available. Check back later!
+                    No posts to show. Subscribe to some creators!
                 </Typography>
             ) : (
-                <Box
-                    display="grid"
-                    gridTemplateColumns="repeat(auto-fill, minmax(300px, 1fr))"
-                    gap="20px"
-                >
+                <Box display="grid" gridTemplateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap="20px">
                     {posts.map((post) => (
-                        <PostCard
-                            key={post.id}
-                            post={post}
-                            isSubscribed={yourFeed.includes(post.id)}
-                        />
+                        <PostCard key={post.id} post={post} isSubscribed={true} />
                     ))}
                 </Box>
             )}
@@ -87,4 +76,4 @@ const AllPostsPage = ({ keycloak, authenticated, user, showCreatePost, handleTog
     );
 };
 
-export default AllPostsPage;
+export default YourFeedPage;

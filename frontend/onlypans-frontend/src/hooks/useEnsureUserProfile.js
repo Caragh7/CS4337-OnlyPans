@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
 import {jwtDecode} from "jwt-decode";
-import { getUserById, createUser } from "../api/UserServiceApi";
+import { getUserById, createUser, getUserByUserId } from "../api/UserServiceApi";
 
 const extractUserDetailsFromToken = (token) => {
-    const decoded = jwtDecode(token);
-    console.log(decoded)
-    return {
-        username : decoded.preferred_username || "",
-        firstName: decoded.given_name || "",
-        lastName: decoded.family_name || "",
-        email: decoded.email || "",
-        id: decoded.sub,
-    };
+    try {
+        const decoded = jwtDecode(token);
+        return {
+            username: decoded.preferred_username || "",
+            firstName: decoded.given_name || "",
+            lastName: decoded.family_name || "",
+            email: decoded.email || "",
+            id: decoded.sub,
+        };
+    } catch (error) {
+        console.error("Error decoding token:", error);
+        return null;
+    }
 };
 
 const useEnsureUserProfile = (token, authenticated) => {
@@ -26,16 +30,26 @@ const useEnsureUserProfile = (token, authenticated) => {
             setLoading(true);
             try {
                 const userDetails = extractUserDetailsFromToken(token);
-                console.log(userDetails)
+                if (!userDetails) throw new Error("Invalid token structure");
 
-                let user = await getUserById(userDetails.id, token);
+                let user = null;
 
-                if (!user) {
-                    user = await createUser(userDetails, token);
+                try {
+                    user = await getUserByUserId(userDetails.id, token);
+                } catch (err) {
+                    if (err.response?.status === 404) {
+                        console.log("User not found, creating new user...");
+                        user = await createUser(userDetails, token);
+                    } else {
+                        throw err;
+                    }
                 }
+
+                if (!user) throw new Error("User creation failed");
 
                 setUser(user);
             } catch (err) {
+                console.error("Error ensuring user profile:", err);
                 setError(err);
             } finally {
                 setLoading(false);

@@ -1,116 +1,124 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    CircularProgress,
+    Alert,
+} from "@mui/material";
 import { upgradeToCreatorProfileReq } from "../api/UserServiceApi";
-import { deleteCreatorProfile, fetchCreatorByUserId } from "../api/CreatorServiceApi";
+import { deleteCreatorProfile } from "../api/CreatorServiceApi";
 
-const UpgradeToCreatorProfile = ({ keycloak, authenticated, user }) => {
+const UpgradeToCreatorProfile = ({ keycloak, authenticated, user, isCreator, setIsCreator }) => {
     const [status, setStatus] = useState("");
-    const [isCreator, setIsCreator] = useState(false);
-    const [price, setPrice] = useState(""); // New state for the price input
-    const [isValidPrice, setIsValidPrice] = useState(false); // To track if the price is valid
+    const [price, setPrice] = useState("");
+    const [isValidPrice, setIsValidPrice] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const token = keycloak?.token;
-
-    useEffect(() => {
-        const checkCreatorStatus = async () => {
-            try {
-                const creatorProfile = await fetchCreatorByUserId(user.id, token);
-                setIsCreator(!!creatorProfile); // setting isCreator to true if a profile exists
-            } catch (error) {
-                if (error.response?.status === 404) {
-                    setIsCreator(false); // no creator profile found
-                } else {
-                    console.error("Error checking creator status:", error);
-                }
-            }
-        };
-        if (authenticated && user) {
-            checkCreatorStatus();
-        } else {
-            console.error("User is not authenticated");
-        }
-    }, [authenticated, user, token]);
 
     const handlePriceChange = (event) => {
         const inputPrice = event.target.value;
         setPrice(inputPrice);
-        setIsValidPrice(inputPrice && !isNaN(inputPrice) && Number(inputPrice) > 0); // Validate price
+        setIsValidPrice(inputPrice && !isNaN(inputPrice) && Number(inputPrice) > 0);
     };
 
     const handleToggleCreatorStatus = async () => {
+        if (loading) return;
+        setLoading(true);
+
         if (isCreator) {
             try {
                 await deleteCreatorProfile(user.id, token);
-                setStatus("Creator Profile Removed");
+                setStatus("Creator profile removed successfully.");
                 setIsCreator(false);
-            } catch (error) {
+            } catch {
                 setStatus("Failed to remove creator profile. Please try again.");
             }
         } else {
             if (!isValidPrice) {
                 setStatus("Please enter a valid price before upgrading.");
+                setLoading(false);
                 return;
             }
 
             try {
                 const response = await upgradeToCreatorProfileReq(user.id, token, price);
-                setStatus(response);
+                setStatus(response || "Profile upgraded successfully.");
                 setIsCreator(true);
-            } catch (error) {
+            } catch {
                 setStatus("Failed to upgrade user. Please try again.");
             }
         }
+
+        setLoading(false);
     };
 
-    if(!authenticated) {
-        return <div>You must be logged in to view this page.</div>;
+    if (!authenticated) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <Typography variant="h6">You must be logged in to view this page.</Typography>
+            </Box>
+        );
     }
 
     return (
-        <div style={{ textAlign: "center", marginTop: "50px" }}>
-            <h1>{isCreator ? "Remove Creator Profile" : "Upgrade to Creator Profile"}</h1>
-            <p>Click the button below to {isCreator ? "remove" : "upgrade"} your profile.</p>
+        <Box
+            maxWidth={500}
+            mx="auto"
+            mt={5}
+            p={3}
+            borderRadius={2}
+            boxShadow={3}
+            textAlign="center"
+        >
+            <Typography variant="h4" gutterBottom>
+                {isCreator ? "Remove Creator Profile" : "Upgrade to Creator Profile"}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+                Click the button below to {isCreator ? "remove" : "upgrade"} your profile.
+            </Typography>
             {!isCreator && (
-                <div style={{ marginBottom: "20px" }}>
-                    <label htmlFor="priceInput" style={{ marginRight: "10px" }}>
-                        Set your price:
-                    </label>
-                    <input
-                        id="priceInput"
-                        type="text"
+                <Box mb={3}>
+                    <TextField
+                        label="Set Your Price"
+                        variant="outlined"
+                        fullWidth
                         value={price}
                         onChange={handlePriceChange}
-                        placeholder="Enter price"
-                        style={{ padding: "5px", borderRadius: "5px", border: "1px solid #ccc" }}
+                        helperText={
+                            isValidPrice
+                                ? "Price looks good!"
+                                : "Enter a valid price greater than 0."
+                        }
+                        error={!isValidPrice && price !== ""}
                     />
-                </div>
+                </Box>
             )}
-            <button
+            <Button
+                variant="contained"
+                color={isCreator ? "error" : "success"}
                 onClick={handleToggleCreatorStatus}
-                style={{
-                    padding: "10px 20px",
-                    fontSize: "16px",
-                    cursor: "pointer",
-                    borderRadius: "5px",
-                    border: "1px solid #ccc",
-                    background: isCreator ? "#FF4136" : "#4CAF50",
-                    color: "#fff",
-                }}
-                disabled={!isCreator && !isValidPrice} 
+                disabled={!isCreator && (!isValidPrice || loading)}
+                sx={{ textTransform: "none", fontSize: "16px", minWidth: 200 }}
             >
-                {isCreator ? "Undo Upgrade" : "Upgrade to Creator"}
-            </button>
+                {loading ? (
+                    <CircularProgress size={24} sx={{ color: "#fff" }} />
+                ) : isCreator ? (
+                    "Undo Upgrade"
+                ) : (
+                    "Upgrade to Creator"
+                )}
+            </Button>
             {status && (
-                <p
-                    style={{
-                        marginTop: "20px",
-                        color: status.includes("success") ? "green" : "red",
-                    }}
-                >
-                    {status}
-                </p>
+                <Box mt={3}>
+                    <Alert severity={status.includes("success") ? "success" : "error"}>
+                        {status}
+                    </Alert>
+                </Box>
             )}
-        </div>
+        </Box>
     );
 };
 

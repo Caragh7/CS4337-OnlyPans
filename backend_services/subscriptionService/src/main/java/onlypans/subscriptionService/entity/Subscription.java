@@ -17,8 +17,9 @@ public class Subscription {
     @Column()
     private String userId;
 
-    @Column()
+    @Column(name = "creator_profile_id")
     private Long creatorProfileId;
+
 
     @Column()
     private String stripeSubscriptionId;

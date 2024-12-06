@@ -53,3 +53,17 @@ export const fetchPosts = async (token) => {
         throw error;
     }
 };
+
+export const fetchYourFeed = async (token) => {
+    try {
+        const {data } = await axios.get(`${process.env.REACT_APP_API_GATEWAY_URL}/posts/your-feed`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return data || [];
+    } catch (error) {
+        console.error("Error fetching your feed:", error);
+        throw error;
+    }
+};
