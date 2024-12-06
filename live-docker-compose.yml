@@ -144,11 +144,21 @@ services:
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3-management
-    env_file:
-      - ./configs/email-notification-service.env
     ports:
       - "5672:5672"
-      - "15673:15672"
+      - "15672:15672"
+      - "4369:4369"
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USERNAME}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+      - RABBITMQ_MANAGEMENT_ENABLED=true
+      - RABBITMQ_HOST=rabbitmq
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "-u", "${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}", "http://localhost:15672/api/overview" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     networks:
       - captain-overlay-network
 
@@ -156,7 +166,7 @@ services:
   email-notification-service:
     image: openjdk:21
     env_file:
-      - ./configs/email-notification-service.env
+      - ./configs/email-notification-service.env   # Load environment variables from file
     container_name: email-notification-service
     volumes:
       - ./backend_services/emailNotificationService/build/libs/emailNotificationService-1.0.0.jar:/app/service.jar
