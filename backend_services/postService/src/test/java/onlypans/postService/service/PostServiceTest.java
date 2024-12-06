@@ -28,10 +28,10 @@ import static org.mockito.Mockito.*;
         "spring.cloud.consul.enabled=false",
         "spring.cloud.consul.discovery.enabled=false",
         "media.service.url=http://localhost:8080"
+
 })
 @Import(TestSecurityConfig.class)
 class PostServiceTest {
-
     @MockBean
     private PostRepository postRepository;
 

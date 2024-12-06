@@ -34,7 +34,6 @@ public class UserService {
 
     public User createUser(User user) {
         try {
-            userRepository.save(user);
             return userRepository.save(user);
 
         } catch (Exception e) {
