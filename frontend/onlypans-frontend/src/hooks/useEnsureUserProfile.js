@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {jwtDecode} from "jwt-decode";
-import { getUserById, createUser, getUserByUserId } from "../api/UserServiceApi";
+import { createUser, getUserByUserId } from "../api/UserServiceApi";
 
 const extractUserDetailsFromToken = (token) => {
     try {
@@ -32,21 +32,10 @@ const useEnsureUserProfile = (token, authenticated) => {
                 const userDetails = extractUserDetailsFromToken(token);
                 if (!userDetails) throw new Error("Invalid token structure");
 
-                let user = null;
-
-                try {
-                    user = await getUserByUserId(userDetails.id, token);
-                } catch (err) {
-                    if (err.response?.status === 404) {
-                        console.log("User not found, creating new user...");
-                        user = await createUser(userDetails, token);
-                    } else {
-                        throw err;
-                    }
+                let user = await getUserByUserId(userDetails.id, token) ?? await createUser(userDetails, token);
+                if (!user) {
+                    throw new Error("Unable to create user")
                 }
-
-                if (!user) throw new Error("User creation failed");
-
                 setUser(user);
             } catch (err) {
                 console.error("Error ensuring user profile:", err);

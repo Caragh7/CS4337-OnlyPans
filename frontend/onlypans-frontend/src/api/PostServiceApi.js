@@ -40,6 +40,7 @@ export const createPost = async (postContent, token) => {
     }
 };
 
+
 export const fetchPosts = async (token) => {
     try {
         const { data } = await axios.get(`${process.env.REACT_APP_API_GATEWAY_URL}/posts`, {
