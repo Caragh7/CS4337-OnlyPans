@@ -53,6 +53,7 @@ jobs:
           ./gradlew -p backend_services/creatorService clean build -x test || echo "No gradlew in creatorService"
           ./gradlew -p api_gateway clean build -x test || echo "No gradlew in api_gateway"
           ./gradlew -p backend_services/emailNotificationService clean build || echo "No gradlew in emailNotificationService"
+          
 
       # Debug Built Files
       - name: Debug Built JARs
