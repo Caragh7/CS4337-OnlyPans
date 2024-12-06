@@ -70,7 +70,7 @@ const YourFeedPage = ({ user, keycloak, authenticated, showCreatePost, handleTog
             ) : (
                 <div style={styles.scrollableContainer}>
                     {Array.isArray(posts) ? (
-                        posts.map((post) => <PostCard key={post.id} post={post}/>)
+                        posts.map((post) => <PostCard key={post.id} post={post} isSubscribed={true}/>)
                     ) : (
                         <p>No posts available</p>
                     )}
