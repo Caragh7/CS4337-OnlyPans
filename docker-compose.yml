@@ -51,8 +51,6 @@ services:
       - rabbitmq
       - consul
       - api-gateway
-    ports:
-      - "8082:8080"
     networks:
       - backend
 
