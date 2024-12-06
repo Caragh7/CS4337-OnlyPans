@@ -95,7 +95,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
 
                 {/* routes for the other pages */}
-                <Route path="/yourFeed" element={<YourFeedPage
+                <Route path="/feed" element={<YourFeedPage
                     keycloak={keycloak}
                     authenticated={authenticated}
                     user={user}
@@ -106,7 +106,7 @@ function App() {
                     keycloak={keycloak}
                     authenticated={authenticated}
                     user={user} />} />
-                <Route path="/allPosts" element={<AllPostsPage
+                <Route path="/posts" element={<AllPostsPage
                     keycloak={keycloak}
                     authenticated={authenticated}
                     user={user}

@@ -6,11 +6,11 @@ import comment from "../assets/icons/speech-bubble.png";
 import placeholder from "../assets/placeholder.jpg";
 import { formatDistanceToNow } from "date-fns";
 import { useState, useEffect, useContext } from "react";
-import { fetchLikeCount, toggleLike, checkIfUserLiked} from "../api/EngagementServiceApi";
+import { fetchLikeCount, toggleLike, checkIfUserLiked } from "../api/EngagementServiceApi";
 import { KeycloakContext } from "./KeyCloakContext";
 import Comments from "./comment";
 
-function PostCard({ post }) {
+function PostCard({ post, isSubscribed }) {
     const { keycloak } = useContext(KeycloakContext);
     const [showComments, setShowComments] = useState(false);
     const [likes, setLikes] = useState(0);
@@ -72,6 +72,8 @@ function PostCard({ post }) {
                 display: "flex",
                 flexDirection: "column",
                 marginBottom: 3,
+                overflow: "hidden",
+                position: "relative",
             }}
         >
             <CardMedia
@@ -82,8 +84,32 @@ function PostCard({ post }) {
                     width: "100%",
                     height: 600,
                     objectFit: "cover",
+                    filter: isSubscribed ? "none" : "blur(10px)",
+                    transition: "filter 0.3s ease",
                 }}
             />
+
+            {!isSubscribed && (
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        color: "white",
+                        fontSize: 18,
+                        fontWeight: "bold",
+                        textAlign: "center",
+                    }}
+                >
+                    Subscribe to unlock full content!
+                </Box>
+            )}
 
             <CardContent
                 sx={{
@@ -104,7 +130,9 @@ function PostCard({ post }) {
                 </Box>
 
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    {post.contentDescription || "Check out this recipe!"}
+                    {isSubscribed
+                        ? post.contentDescription || "Check out this recipe!"
+                        : "Subscribe to see the full description..."}
                 </Typography>
 
                 <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
@@ -127,7 +155,7 @@ function PostCard({ post }) {
                     </IconButton>
                 </Box>
 
-                {showComments && <Comments postId={post.id} />}
+                {(showComments &&  isSubscribed) && <Comments postId={post.id} />}
             </CardContent>
         </Card>
     );

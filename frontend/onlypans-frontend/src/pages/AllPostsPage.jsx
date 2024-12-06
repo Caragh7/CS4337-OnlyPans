@@ -1,9 +1,7 @@
-
-
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import PostCard from "../components/post";
 import CreatePost from "../components/createpost";
-import {fetchPosts} from "../api/PostServiceApi"
+import { fetchPosts, fetchYourFeed } from "../api/PostServiceApi";
 
 const styles = {
     scrollableContainer: {
@@ -19,33 +17,37 @@ const styles = {
     },
 };
 
-
-const AllPostsPage = ({keycloak, authenticated, user, showCreatePost, handleToggleCreatePost}) => {
+const AllPostsPage = ({ keycloak, authenticated, user, showCreatePost, handleToggleCreatePost }) => {
     const [posts, setPosts] = useState([]);
+    const [yourFeed, setYourFeed] = useState([]);
 
     const handlePostCreate = (newPost) => {
-        alert('Post created successfully!');
+        alert("Post created successfully!");
         setPosts((prevPosts) => [newPost, ...prevPosts]);
     };
 
     const token = keycloak?.token;
 
     useEffect(() => {
-        const loadPosts = async () => {
+        const loadPostsAndFeed = async () => {
             if (token) {
                 try {
-                    const fetchedPosts = await fetchPosts(token);
+                    const [fetchedPosts, fetchedFeed] = await Promise.all([
+                        fetchPosts(token),
+                        fetchYourFeed(token),
+                    ]);
                     setPosts(fetchedPosts);
+                    setYourFeed(fetchedFeed.map((post) => post.id));
                 } catch (error) {
-                    console.error("Error fetching posts:", error);
-                    setPosts([]); // Fallback to an empty array
+                    console.error("Error loading posts or feed:", error);
+                    setPosts([]);
+                    setYourFeed([]);
                 }
             }
         };
 
-        loadPosts();
+        loadPostsAndFeed();
     }, [token]);
-
 
     return (
         <div>
@@ -59,7 +61,13 @@ const AllPostsPage = ({keycloak, authenticated, user, showCreatePost, handleTogg
             </div>
             <div style={styles.scrollableContainer}>
                 {Array.isArray(posts) ? (
-                    posts.map((post) => <PostCard key={post.id} post={post} />)
+                    posts.map((post) => (
+                        <PostCard
+                            key={post.id}
+                            post={post}
+                            isSubscribed={yourFeed.includes(post.id)}
+                        />
+                    ))
                 ) : (
                     <p>No posts available</p>
                 )}
@@ -67,6 +75,5 @@ const AllPostsPage = ({keycloak, authenticated, user, showCreatePost, handleTogg
         </div>
     );
 };
-
 
 export default AllPostsPage;
