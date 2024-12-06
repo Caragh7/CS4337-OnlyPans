@@ -34,7 +34,7 @@ class CreatorProfileControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean // Use @MockBean instead of @Mock to register the mock with the Spring context
+    @MockBean 
     private CreatorProfileService creatorProfileService;
 
     @Test
@@ -62,7 +62,7 @@ class CreatorProfileControllerTest {
         mockMvc.perform(post("/creator-profiles/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request))
-                        .with(jwt().authorities(() -> "ROLE_USER"))) // Simulate JWT authentication
+                        .with(jwt().authorities(() -> "ROLE_USER"))
                 .andExpect(status().isCreated());
 
         verify(creatorProfileService).createCreatorProfile(any(CreatorProfileRequest.class));
@@ -74,7 +74,7 @@ class CreatorProfileControllerTest {
         doNothing().when(creatorProfileService).deleteCreatorProfile(anyString());
 
         mockMvc.perform(delete("/creator-profiles/delete")
-                        .with(jwt().authorities(() -> "USER"))) // Simulate JWT
+                        .with(jwt().authorities(() -> "USER")))
                 .andExpect(status().isNoContent());
     }
 }
