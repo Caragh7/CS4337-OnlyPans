@@ -14,6 +14,7 @@ A microservice-based web application that allows users to subscribe to creators,
     - Creator Service
     - Post Service
     - Media Service
+    - 
     - API Gateway
 - **Database**:
     - MySQL with replication support.
