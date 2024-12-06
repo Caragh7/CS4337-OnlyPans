@@ -16,7 +16,7 @@ public class Post {
     @Column(name = "creator_id")
     private Long creatorId; // This links the post to the creator (user ID)
 
-    @Column(length = 500)
+    @Column(length = 2000)
     private String contentDescription;
 
     @Column(length = 50)
