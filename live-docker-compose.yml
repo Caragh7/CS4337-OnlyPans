@@ -140,21 +140,19 @@ services:
     networks:
       - captain-overlay-network
 
-  # RabbitMQ service
+    # RabbitMQ service
   rabbitmq:
-    container_name: rabbitmq
     image: rabbitmq:3-management
     env_file:
       - ./configs/email-notification-service.env
     networks:
       - captain-overlay-network
 
-    # Email Notification Service
+  # Email Notification Service
   email-notification-service:
     image: openjdk:21
     env_file:
       - ./configs/email-notification-service.env
-    container_name: email-notification-service
     volumes:
       - ./backend_services/emailNotificationService/build/libs/emailNotificationService-1.0.0.jar:/app/service.jar
     command: [ "java", "-jar", "/app/service.jar" ]
@@ -164,6 +162,18 @@ services:
       - api-gateway
     networks:
       - captain-overlay-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1g
+          cpus: "0.5"
+        reservations:
+          memory: 512m
+          cpus: "0.25"
+
 
   frontend:
     build:
