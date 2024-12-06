@@ -160,13 +160,13 @@ public class SubscriptionService {
 
     public void handleSubscriptionDeleted(StripeObject stripeObject) {
         if (stripeObject instanceof com.stripe.model.Subscription subscription) {
-//            String stripeSubscriptionId = subscription.getId();
-//            List<Subscription> subscriptions = getSubscriptionsByStripeId(stripeSubscriptionId);
-//            subscriptions.forEach(sub -> {
-//                sub.setState("CANCELED");
-//                subscriptionService.saveSubscription(sub);
-//            });
-//            System.out.println("Subscription(s) canceled successfully for Stripe ID: " + stripeSubscriptionId);
+            String stripeSubscriptionId = subscription.getId();
+            Subscription sub = subscriptionRepository.findByStripeSubscriptionId(stripeSubscriptionId);
+            if(sub != null) {
+                sub.setState("CANCELED");
+                subscriptionRepository.save(sub);
+            }
+            System.out.println("Subscription(s) canceled successfully for Stripe ID: " + stripeSubscriptionId);
         } else {
             System.out.println("Stripe object is not a Subscription.");
         }
