@@ -11,6 +11,7 @@ jobs:
     runs-on: self-hosted
 
     steps:
+
       # Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -41,6 +42,7 @@ jobs:
         run: |
           chmod +x gradlew
           find . -name "gradlew" -exec chmod +x {} \;
+      
 
       # Build Backend JARs
       - name: Build JARs
@@ -52,6 +54,8 @@ jobs:
           ./gradlew -p backend_services/engagementService clean build || echo "No gradlew in engagementService"
           ./gradlew -p backend_services/creatorService clean build || echo "No gradlew in creatorService"
           ./gradlew -p api_gateway clean build -x test || echo "No gradlew in api_gateway"
+          ./gradlew -p backend_services/emailNotificationService clean build || echo "No gradlew in emailNotificationService"
+          
 
       # Debug Built Files
       - name: Debug Built JARs

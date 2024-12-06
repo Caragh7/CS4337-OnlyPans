@@ -26,6 +26,33 @@ services:
       retries: 5
       start_period: 30s
 
+  # RabbitMQ service
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    env_file:
+      - ./configs/email-notification-service.env
+    networks:
+      - backend
+
+
+    # Email Notification Service
+  email-notification-service:
+    image: openjdk:21
+    env_file:
+      - ./configs/email-notification-service.env
+    container_name: email-notification-service
+    volumes:
+      - ./backend_services/emailNotificationService/build/libs/emailNotificationService-1.0.0.jar:/app/service.jar
+    command: [ "java", "-jar", "/app/service.jar" ]
+    depends_on:
+      - rabbitmq
+      - consul
+      - api-gateway
+    networks:
+      - backend
+
+
   # Consul service
   consul:
     image: hashicorp/consul:latest
@@ -47,7 +74,7 @@ services:
     image: openjdk:21
     volumes:
       - ./backend_services/subscriptionService/build/libs/subscriptionService-1.0.0.jar:/app/service.jar
-    command: ["java", "-jar", "/app/service.jar"]
+    command: [ "java", "-jar", "/app/service.jar" ]
     depends_on:
       - consul
       - api-gateway
@@ -60,7 +87,7 @@ services:
     image: openjdk:21
     volumes:
       - ./backend_services/userService/build/libs/userService-1.0.0.jar:/app/service.jar
-    command: ["java", "-jar", "/app/service.jar"]
+    command: [ "java", "-jar", "/app/service.jar" ]
     depends_on:
       - consul
       - api-gateway
@@ -88,7 +115,7 @@ services:
     container_name: api-gateway
     volumes:
       - ./api_gateway/build/libs/api_gateway-1.0.0.jar:/app/service.jar
-    command: ["java", "-jar", "/app/service.jar"]
+    command: [ "java", "-jar", "/app/service.jar" ]
     depends_on:
       keycloak:
         condition: service_healthy
@@ -97,7 +124,7 @@ services:
     env_file:
       - ./configs/gateway.env
     ports:
-      - 8080:8080
+      - "8080:8080"
     networks:
       - backend
 
@@ -105,7 +132,7 @@ services:
     image: openjdk:21
     volumes:
       - ./backend_services/postService/build/libs/postService-1.0.0.jar:/app/service.jar
-    command: ["java", "-jar", "/app/service.jar"]
+    command: [ "java", "-jar", "/app/service.jar" ]
     depends_on:
       - consul
       - api-gateway

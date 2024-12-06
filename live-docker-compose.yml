@@ -52,7 +52,7 @@ services:
     image: openjdk:21
     volumes:
       - ./backend_services/subscriptionService/build/libs/subscriptionService-1.0.0.jar:/app/service.jar
-    command: ["java", "-jar", "/app/service.jar"]
+    command: [ "java", "-jar", "/app/service.jar" ]
     depends_on:
       - consul
       - api-gateway
@@ -76,7 +76,7 @@ services:
     image: openjdk:21
     volumes:
       - ./backend_services/userService/build/libs/userService-1.0.0.jar:/app/service.jar
-    command: ["java", "-jar", "/app/service.jar"]
+    command: [ "java", "-jar", "/app/service.jar" ]
     depends_on:
       - consul
       - api-gateway
@@ -101,7 +101,7 @@ services:
     container_name: api-gateway
     volumes:
       - ./api_gateway/build/libs/api_gateway-1.0.0.jar:/app/service.jar
-    command: ["java", "-jar", "/app/service.jar"]
+    command: [ "java", "-jar", "/app/service.jar" ]
     depends_on:
       keycloak:
         condition: service_healthy
@@ -152,7 +152,7 @@ services:
     image: openjdk:21
     volumes:
       - ./backend_services/postService/build/libs/postService-1.0.0.jar:/app/service.jar
-    command: ["java", "-jar", "/app/service.jar"]
+    command: [ "java", "-jar", "/app/service.jar" ]
     depends_on:
       - consul
       - api-gateway
@@ -219,6 +219,41 @@ services:
         reservations:
           memory: 512m
           cpus: "0.25"
+
+    # RabbitMQ service
+  rabbitmq:
+    image: rabbitmq:3-management
+    env_file:
+      - ./configs/email-notification-service.env
+    networks:
+      - captain-overlay-network
+
+  # Email Notification Service
+  email-notification-service:
+    image: openjdk:21
+    env_file:
+      - ./configs/email-notification-service.env
+    volumes:
+      - ./backend_services/emailNotificationService/build/libs/emailNotificationService-1.0.0.jar:/app/service.jar
+    command: [ "java", "-jar", "/app/service.jar" ]
+    depends_on:
+      - rabbitmq
+      - consul
+      - api-gateway
+    networks:
+      - captain-overlay-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1g
+          cpus: "0.5"
+        reservations:
+          memory: 512m
+          cpus: "0.25"
+
 
   frontend:
     build:
