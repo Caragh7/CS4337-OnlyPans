@@ -34,7 +34,7 @@ services:
       - ./configs/email-notification-service.env
     ports:
       - "5672:5672"
-      - "15673:15672"
+      - "15672:15672"
     networks:
       - backend
 
@@ -105,7 +105,7 @@ services:
     container_name: engagement-service
     volumes:
       - ./backend_services/engagementService/build/libs/engagementService-1.0.0.jar:/app/service.jar
-    command: [ "java", "-jar", "/app/service.jar" ]
+    command: ["java", "-jar", "/app/service.jar"]
     depends_on:
       - consul
       - api-gateway
