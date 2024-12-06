@@ -147,7 +147,7 @@ services:
     env_file:
       - ./configs/email-notification-service.env
     ports:
-      - "5672:5672"
+      - "5673:5672"
       - "15672:15672"
     networks:
       - captain-overlay-network
