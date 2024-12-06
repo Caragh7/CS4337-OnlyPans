@@ -22,6 +22,16 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1g
+          cpus: "1.0"
+        reservations:
+          memory: 512m
+          cpus: "0.5"
 
   # Consul service
   consul:
@@ -40,7 +50,6 @@ services:
 
   subscription-service:
     image: openjdk:21
-    container_name: subscription-service
     volumes:
       - ./backend_services/subscriptionService/build/libs/subscriptionService-1.0.0.jar:/app/service.jar
     command: [ "java", "-jar", "/app/service.jar" ]
@@ -51,10 +60,20 @@ services:
       - ./configs/subscription_service.env
     networks:
       - captain-overlay-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1g
+          cpus: "0.5"
+        reservations:
+          memory: 512m
+          cpus: "0.25"
 
   user-service:
     image: openjdk:21
-    container_name: user-service
     volumes:
       - ./backend_services/userService/build/libs/userService-1.0.0.jar:/app/service.jar
     command: [ "java", "-jar", "/app/service.jar" ]
@@ -65,6 +84,17 @@ services:
       - ./configs/user_service.env
     networks:
       - captain-overlay-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1g
+          cpus: "0.5"
+        reservations:
+          memory: 512m
+          cpus: "0.25"
 
   api-gateway:
     image: openjdk:21
@@ -83,10 +113,19 @@ services:
       - 8080:8080
     networks:
       - captain-overlay-network
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1g
+          cpus: "0.5"
+        reservations:
+          memory: 512m
+          cpus: "0.25"
 
   engagement-service:
     image: openjdk:21
-    container_name: engagement-service
     volumes:
       - ./backend_services/engagementService/build/libs/engagementService-1.0.0.jar:/app/service.jar
     command: [ "java", "-jar", "/app/service.jar" ]
@@ -97,10 +136,20 @@ services:
       - ./configs/engagement_service.env
     networks:
       - captain-overlay-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1g
+          cpus: "0.5"
+        reservations:
+          memory: 512m
+          cpus: "0.25"
 
   post-service:
     image: openjdk:21
-    container_name: post-service
     volumes:
       - ./backend_services/postService/build/libs/postService-1.0.0.jar:/app/service.jar
     command: [ "java", "-jar", "/app/service.jar" ]
@@ -111,10 +160,20 @@ services:
       - ./configs/post_service.env
     networks:
       - captain-overlay-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1g
+          cpus: "0.5"
+        reservations:
+          memory: 512m
+          cpus: "0.25"
 
   media-service:
     image: openjdk:21
-    container_name: media-service
     volumes:
       - ./backend_services/mediaService/build/libs/mediaService-1.0.0.jar:/app/service.jar
     command: [ "java", "-jar", "/app/service.jar" ]
@@ -125,10 +184,20 @@ services:
       - ./configs/media_service.env
     networks:
       - captain-overlay-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1g
+          cpus: "0.5"
+        reservations:
+          memory: 512m
+          cpus: "0.25"
 
   creator-service:
     image: openjdk:21
-    container_name: creator-service
     volumes:
       - ./backend_services/creatorService/build/libs/creatorService-1.0.0.jar:/app/service.jar
     command: [ "java", "-jar", "/app/service.jar" ]
@@ -139,6 +208,17 @@ services:
       - ./configs/creator_service.env
     networks:
       - captain-overlay-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1g
+          cpus: "0.5"
+        reservations:
+          memory: 512m
+          cpus: "0.25"
 
     # RabbitMQ service
   rabbitmq:

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/creator-profiles")
@@ -46,7 +45,7 @@ public class CreatorProfileController {
     }
 
     @GetMapping("/user/{userId}")
-    public CreatorProfile getCreatorProfileByUserId(@PathVariable String userId) {
+    public CreatorProfile getCreatorProfileIdByUserId(@PathVariable String userId) {
         return creatorProfileService.getCreatorProfileByUserId(userId);
     }
 

@@ -11,7 +11,7 @@ public class CreatorProfile {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String userId; // Foreign key to User entity, how to connect these??
+    private String userId;
     private String firstName;
     private String lastName;
     private String stripePriceId;

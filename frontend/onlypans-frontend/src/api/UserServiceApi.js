@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const getUserById = async (id, token) => {
+export const getUserByUserId = async (id, token) => {
     try {
         const response = await axios.get(`${process.env.REACT_APP_API_GATEWAY_URL}/users/${id}`, {
             headers: {

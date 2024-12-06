@@ -1,6 +1,6 @@
-import {useState, useEffect, useContext} from "react";
-import {KeycloakContext} from "./components/KeyCloakContext";
-import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import { KeycloakContext } from "./components/KeyCloakContext";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ResponsiveAppBar from "./components/AppBar";
 import CreatePost from "./components/CreatePost";
 import useEnsureUserProfile from "./hooks/useEnsureUserProfile";
@@ -10,45 +10,21 @@ import AllPostsPage from "./pages/AllPostsPage";
 import UpgradeToCreatorProfile from "./pages/UpgradeToCreatorPage";
 import CreatorsPage from "./pages/CreatorsPage";
 import YourFeedPage from "./pages/YourFeedPage";
-import {fetchCreatorByUserId} from "./api/CreatorServiceApi";
-import {CircularProgress, Box} from "@mui/material";
-import {sendLoginNotification} from "./api/EmailNotificationApi";
+import { fetchCreatorByUserId } from "./api/CreatorServiceApi";
+import { CircularProgress, Box } from "@mui/material";
 
 function App() {
-    const {keycloak, authenticated, initialized} = useContext(KeycloakContext);
+    const { keycloak, authenticated, initialized } = useContext(KeycloakContext);
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [isCreator, setIsCreator] = useState(false);
 
-    const {user, loading: profileLoading, error: profileError} = useEnsureUserProfile(
+    const { user, loading: profileLoading, error: profileError } = useEnsureUserProfile(
         keycloak?.token,
         authenticated
     );
 
     const token = keycloak?.token;
 
-// Track if email has been sent
-    const setNotificationSent = () => {
-        sessionStorage.setItem("notificationSent", "true");
-    };
-
-// Check if email has been sent
-    const isNotificationSent = () => {
-        return sessionStorage.getItem("notificationSent") === "true";
-    };
-
-// Call sendLoginNotification if auth succeeds
-    useEffect(() => {
-        if (user && authenticated && !isNotificationSent()) {
-            sendLoginNotification(user.email, keycloak.token)
-                .then(() => {
-                    console.log("Login notification sent successfully!");
-                    setNotificationSent();
-                })
-                .catch((error) => {
-                    console.error("Failed to send login notification:", error);
-                });
-        }
-    }, [user, authenticated, keycloak?.token]);
     const handleToggleCreatePost = () => setShowCreatePost((prev) => !prev);
 
     useEffect(() => {
@@ -56,7 +32,7 @@ function App() {
             const checkCreatorStatus = async () => {
                 try {
                     const data = await fetchCreatorByUserId(user.id, token);
-                    if (data) {
+                    if(data) {
                         setIsCreator(true)
                     } else {
                         setIsCreator(false)
@@ -80,8 +56,8 @@ function App() {
                 height: "100vh",
             }}
         >
-            <CircularProgress/>
-            <Box sx={{mt: 2, fontSize: 16, color: "#666"}}>{message}</Box>
+            <CircularProgress />
+            <Box sx={{ mt: 2, fontSize: 16, color: "#666" }}>{message}</Box>
         </Box>
     );
 
@@ -110,9 +86,9 @@ function App() {
 
     return (
         <Router>
-            <ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost} isCreator={isCreator}/>
+            <ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost} isCreator={isCreator} />
             <Routes>
-                <Route path="/profile" element={<UserProfile keycloak={keycloak} user={user}/>}/>
+                <Route path="/profile" element={<UserProfile keycloak={keycloak} user={user} />} />
                 <Route
                     path="/upgrade"
                     element={
@@ -125,7 +101,7 @@ function App() {
                         />
                     }
                 />
-                <Route path="/" element={<HomePage/>}/>
+                <Route path="/" element={<HomePage />} />
                 <Route
                     path="/feed"
                     element={
@@ -140,7 +116,7 @@ function App() {
                 />
                 <Route
                     path="/creators"
-                    element={<CreatorsPage keycloak={keycloak} user={user}/>}
+                    element={<CreatorsPage keycloak={keycloak} user={user} />}
                 />
                 <Route
                     path="/posts"

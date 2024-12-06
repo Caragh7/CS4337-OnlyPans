@@ -13,6 +13,9 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "creator_id")
+    private Long creatorId; // This links the post to the creator (user ID)
+
     @Column(length = 500)
     private String contentDescription;
 
@@ -53,5 +56,8 @@ public class Post {
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
+
+    public Long getCreatorId() { return creatorId; }
+    public void setCreatorId(Long creatorId) { this.creatorId = creatorId; }
 
 }
