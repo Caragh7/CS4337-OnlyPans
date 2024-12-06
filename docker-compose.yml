@@ -38,6 +38,7 @@ services:
     networks:
       - backend
 
+
     # Email Notification Service
   email-notification-service:
     image: openjdk:21
