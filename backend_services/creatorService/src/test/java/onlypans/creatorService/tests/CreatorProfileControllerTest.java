@@ -62,8 +62,9 @@ class CreatorProfileControllerTest {
         mockMvc.perform(post("/creator-profiles/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request))
-                        .with(jwt().authorities(() -> "ROLE_USER"))
+                        .with(jwt().authorities(() -> "ROLE_USER")))
                 .andExpect(status().isCreated());
+
 
         verify(creatorProfileService).createCreatorProfile(any(CreatorProfileRequest.class));
     }
