@@ -1,10 +1,9 @@
-import axios from 'axios';
-import * as React from 'react';
-import { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Card, CardContent, CardMedia, Typography, Avatar, Box, TextField, Button, Modal, Backdrop, Snackbar, Alert } from '@mui/material';
 import placeholder from '../assets/placeholder.jpg';
 import user from '../assets/user.png';
 import { KeycloakContext } from "./KeyCloakContext";
+import { getPresignedUrl, uploadFile, createPost } from '../api/PostServiceApi';
 
 function CreatePost({ open, onClose }) {
     const { keycloak } = useContext(KeycloakContext);
@@ -29,8 +28,6 @@ function CreatePost({ open, onClose }) {
             return;
         }
 
-
-        console.log("Requesting presigned URL")
         try {
             const token = keycloak?.token;
             if (!token) {
@@ -38,21 +35,10 @@ function CreatePost({ open, onClose }) {
                 return;
             }
 
-            console.log("Requesting presigned URL");
             const fileName = image.name;
 
-            const { data: presignedUrl } = await axios.get('http://localhost:8080/media/presigned-url', {
-                params: { fileName },
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            await axios.put(presignedUrl, image, {
-                headers: {
-                    'Content-Type': image.type,
-                },
-            });
+            const presignedUrl = await getPresignedUrl(fileName, token);
+            await uploadFile(presignedUrl, image);
 
             const postContent = {
                 contentDescription: content,
@@ -60,13 +46,9 @@ function CreatePost({ open, onClose }) {
                 mediaUrl: fileName,
             };
 
-            const { data: createdPost } = await axios.post('http://localhost:8080/posts', postContent, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
+            const createdPost = await createPost(postContent, token);
             console.log("Created Post:", createdPost);
+
             setContent('');
             setImage(null);
             setPreview(placeholder);
@@ -77,7 +59,6 @@ function CreatePost({ open, onClose }) {
             alert('There was an error creating the post.');
         }
     };
-
 
     const handleCloseSuccess = () => {
         setSuccessOpen(false);
@@ -161,7 +142,6 @@ function CreatePost({ open, onClose }) {
                     </Card>
                 </Box>
             </Modal>
-
 
             <Snackbar
                 open={successOpen}
