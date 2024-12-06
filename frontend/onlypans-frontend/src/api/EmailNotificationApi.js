@@ -22,3 +22,4 @@ export const sendLoginNotification = async (email, token) => {
         throw error;
     }
 };
+

@@ -1,4 +1,4 @@
-import {useState, useEffect, useContext} from 'react';
+import {useState, useEffect, useContext, useRef} from 'react';
 import {KeycloakContext} from './components/KeyCloakContext';
 import axios from 'axios';
 import './App.css';
@@ -35,14 +35,30 @@ function App() {
         authenticated
     );
 
-    // Call sendLoginNotification if auth succeeds
+
+    // Track if email has been sent
+    const setNotificationSent = () => {
+        sessionStorage.setItem("notificationSent", "true");
+    };
+
+// Check if email has been sent
+    const isNotificationSent = () => {
+        return sessionStorage.getItem("notificationSent") === "true";
+    };
+
+// Call sendLoginNotification if auth succeeds
     useEffect(() => {
-        if (user && authenticated) {
+        if (user && authenticated && !isNotificationSent()) {
             sendLoginNotification(user.email, keycloak.token)
-                .then(() => console.log("Login notification sent successfully!"))
-                .catch((error) => console.error("Failed to send login notification:", error));
+                .then(() => {
+                    console.log("Login notification sent successfully!");
+                    setNotificationSent();
+                })
+                .catch((error) => {
+                    console.error("Failed to send login notification:", error);
+                });
         }
-    }, [user, authenticated]);
+    }, [user, authenticated, keycloak?.token]);
 
 
     if (!initialized) {
@@ -54,7 +70,7 @@ function App() {
         return <div>Redirecting to login...</div>;
     }
 
-    // user profile checks!
+// user profile checks!
     if (loading) {
         return <div>Ensuring user profile...</div>
     }
