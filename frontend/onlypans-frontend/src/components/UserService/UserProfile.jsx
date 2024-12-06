@@ -5,10 +5,6 @@ const UserProfile = ({keycloak, authenticated, user}) => {
     const [userData, setUserData] = useState(user || {});
     const [isEditing, setIsEditing] = useState(false);
 
-    if (!authenticated) {
-        console.error("User is not authenticated");
-        return <div>You must be logged in to view this page.</div>;
-    }
 
     const handleUpdate = async () => {
         try {
@@ -33,15 +29,45 @@ const UserProfile = ({keycloak, authenticated, user}) => {
 
 
     return (
-        <div>
-            <h1>User Profile</h1>
+        <div style={{
+            maxWidth: "600px",
+            margin: "20px auto",
+            padding: "20px",
+            border: "1px solid #ccc",
+            borderRadius: "10px",
+            backgroundColor: "#f9f9f9",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"
+        }}>
+            <h1 style={{
+                fontSize: "24px",
+                fontWeight: "bold",
+                marginBottom: "20px",
+                textAlign: "center",
+                color: "#333"
+            }}>
+                Your Info
+            </h1>
             {!isEditing ? (
-                <div>
-                    <p><strong>Username:</strong> {userData.username || "N/A"}</p>
-                    <p><strong>First Name:</strong> {userData.firstName || "N/A"}</p>
-                    <p><strong>Last Name:</strong> {userData.lastName || "N/A"}</p>
-                    <p><strong>Email:</strong> {userData.email || "N/A"}</p>
-                    <button onClick={() => setIsEditing(true)}>Edit</button>
+                <div style={{lineHeight: "1.6", color: "#555"}}>
+                    <p><strong style={{color: "#000"}}>Username:</strong> {userData.username || "N/A"}</p>
+                    <p><strong style={{color: "#000"}}>First Name:</strong> {userData.firstName || "N/A"}</p>
+                    <p><strong style={{color: "#000"}}>Last Name:</strong> {userData.lastName || "N/A"}</p>
+                    <p><strong style={{color: "#000"}}>Email:</strong> {userData.email || "N/A"}</p>
+                    {/*<button*/}
+                    {/*    onClick={() => setIsEditing(true)}*/}
+                    {/*    style={{*/}
+                    {/*        marginTop: "15px",*/}
+                    {/*        padding: "10px 15px",*/}
+                    {/*        backgroundColor: "#007bff",*/}
+                    {/*        color: "#fff",*/}
+                    {/*        border: "none",*/}
+                    {/*        borderRadius: "5px",*/}
+                    {/*        cursor: "pointer",*/}
+                    {/*        fontWeight: "bold",*/}
+                    {/*    }}*/}
+                    {/*>*/}
+                    {/*    Edit*/}
+                    {/*</button>*/}
                 </div>
             ) : (
                 <div>
@@ -72,7 +98,6 @@ const UserProfile = ({keycloak, authenticated, user}) => {
                             placeholder="Username..."
                         />
                     </label>
-
 
 
                     <button onClick={handleUpdate}>Save</button>
