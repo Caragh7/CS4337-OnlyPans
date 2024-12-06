@@ -1,122 +1,138 @@
-import { useState, useEffect, useContext } from 'react';
-import { KeycloakContext } from './components/KeyCloakContext';
-import axios from 'axios';
-import './App.css';
-import ResponsiveAppBar from './components/appbar';
-import CreatePost from './components/createpost';
-import PostCard from './components/post';
+import { useState, useEffect, useContext } from "react";
+import { KeycloakContext } from "./components/KeyCloakContext";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ResponsiveAppBar from "./components/AppBar";
+import CreatePost from "./components/CreatePost";
 import useEnsureUserProfile from "./hooks/useEnsureUserProfile";
 import UserProfile from "./components/UserService/UserProfile";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from "./pages/HomePage";
 import AllPostsPage from "./pages/AllPostsPage";
 import UpgradeToCreatorProfile from "./pages/UpgradeToCreatorPage";
 import CreatorsPage from "./pages/CreatorsPage";
 import YourFeedPage from "./pages/YourFeedPage";
-import {fetchCreatorByUserId} from "./api/CreatorServiceApi";
-
-
+import { fetchCreatorByUserId } from "./api/CreatorServiceApi";
+import { CircularProgress, Box } from "@mui/material";
 
 function App() {
     const { keycloak, authenticated, initialized } = useContext(KeycloakContext);
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [isCreator, setIsCreator] = useState(false);
 
-    // creating a post
-    const handleToggleCreatePost = () => {
-        setShowCreatePost((prev) => !prev);
-    };
-
-
-
-
-// checking if a user profile exists for the current logged-in user, and if not we make one!
-    const { user, loading, error } = useEnsureUserProfile(
+    const { user, loading: profileLoading, error: profileError } = useEnsureUserProfile(
         keycloak?.token,
         authenticated
     );
+
     const token = keycloak?.token;
 
-// checking if this user is a creator
+    const handleToggleCreatePost = () => setShowCreatePost((prev) => !prev);
 
     useEffect(() => {
-        const checkCreatorStatus = async () => {
-            if (!user?.id) {
-                console.error("User ID is not available");
-                return;
-            }
-            try {
-                const creatorProfile = await fetchCreatorByUserId(user.id, token);
-                setIsCreator(true); // setting isCreator to true if a profile exists
-            } catch (error) {
-                if (error.response?.status === 404) {
-                    setIsCreator(false); // no creator profile found
-                } else {
-                    console.error("Error checking creator status:", error);
+        if (user?.id) {
+            const checkCreatorStatus = async () => {
+                try {
+                    const data = await fetchCreatorByUserId(user.id, token);
+                    if(data) {
+                        setIsCreator(true)
+                    } else {
+                        setIsCreator(false)
+                    }
+                } catch (error) {
+                    if (error.response?.status === 404) setIsCreator(false);
+                    else console.error("Error checking creator status:", error);
                 }
-            }
-        };
-       checkCreatorStatus();
-    }, [authenticated, user, token]);
+            };
+            checkCreatorStatus();
+        }
+    }, [user?.id, token]);
 
-    if (!initialized) {
-        return <div>Loading...</div>;
-    }
+    const renderLoader = (message = "Loading...") => (
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100vh",
+            }}
+        >
+            <CircularProgress />
+            <Box sx={{ mt: 2, fontSize: 16, color: "#666" }}>{message}</Box>
+        </Box>
+    );
 
+    if (!initialized) return renderLoader("Initializing application...");
     if (!authenticated) {
         keycloak.login();
-        return <div>Redirecting to login...</div>;
+        return renderLoader("Redirecting to login...");
     }
-
-    // user profile checks!
-    if (loading) {
-        return <div>Ensuring user profile...</div>
-    }
-
-    if (error) {
-        return <div>Error ensuring user profile : {error.message}</div>
-    }
+    if (profileLoading) return renderLoader("Setting up your profile...");
+    if (profileError)
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100vh",
+                    color: "red",
+                    fontSize: 16,
+                }}
+            >
+                Error ensuring user profile: {profileError.message}
+            </Box>
+        );
 
     return (
         <Router>
             <ResponsiveAppBar onToggleCreatePost={handleToggleCreatePost} isCreator={isCreator} />
             <Routes>
-                <Route
-                    path="/profile"
-                    element={<UserProfile keycloak={keycloak} authenticated={authenticated} user={user} />}
-                />
+                <Route path="/profile" element={<UserProfile keycloak={keycloak} user={user} />} />
                 <Route
                     path="/upgrade"
-                    element={<UpgradeToCreatorProfile keycloak={keycloak} user={user} authenticated={authenticated} isCreator={isCreator} setIsCreator={setIsCreator}/>}
+                    element={
+                        <UpgradeToCreatorProfile
+                            keycloak={keycloak}
+                            user={user}
+                            isCreator={isCreator}
+                            setIsCreator={setIsCreator}
+                            authenticated={authenticated}
+                        />
+                    }
                 />
-
-
-                {/* Main page with buttons */}
                 <Route path="/" element={<HomePage />} />
-
-                {/* routes for the other pages */}
-                <Route path="/feed" element={<YourFeedPage
-                    keycloak={keycloak}
-                    authenticated={authenticated}
-                    user={user}
-                    showCreatePost={showCreatePost}
-                    handleToggleCreatePost={handleToggleCreatePost}
-                />} />
-                <Route path="/creators" element={<CreatorsPage
-                    keycloak={keycloak}
-                    authenticated={authenticated}
-                    user={user} />} />
-                <Route path="/posts" element={<AllPostsPage
-                    keycloak={keycloak}
-                    authenticated={authenticated}
-                    user={user}
-                    showCreatePost={showCreatePost}
-                    handleToggleCreatePost={handleToggleCreatePost}
-                />} />
+                <Route
+                    path="/feed"
+                    element={
+                        <YourFeedPage
+                            keycloak={keycloak}
+                            user={user}
+                            authenticated={keycloak.authenticated}
+                            showCreatePost={showCreatePost}
+                            handleToggleCreatePost={handleToggleCreatePost}
+                        />
+                    }
+                />
+                <Route
+                    path="/creators"
+                    element={<CreatorsPage keycloak={keycloak} user={user} />}
+                />
+                <Route
+                    path="/posts"
+                    element={
+                        <AllPostsPage
+                            keycloak={keycloak}
+                            user={user}
+                            authenticated={authenticated}
+                            showCreatePost={showCreatePost}
+                            handleToggleCreatePost={handleToggleCreatePost}
+                        />
+                    }
+                />
             </Routes>
         </Router>
     );
 }
-
 
 export default App;

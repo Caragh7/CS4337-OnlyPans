@@ -8,7 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useState, useEffect, useContext } from "react";
 import { fetchLikeCount, toggleLike, checkIfUserLiked } from "../api/EngagementServiceApi";
 import { KeycloakContext } from "./KeyCloakContext";
-import Comments from "./comment";
+import Comments from "./Comment";
 
 function PostCard({ post, isSubscribed }) {
     const { keycloak } = useContext(KeycloakContext);
@@ -28,13 +28,9 @@ function PostCard({ post, isSubscribed }) {
             try {
                 const likeCount = await fetchLikeCount(post.id, token);
                 setLikes(likeCount);
-
-                // checking if user liked
                 const alreadyLiked = await checkIfUserLiked(post.id, token);
                 setLiked(alreadyLiked);
-            } catch (error) {
-                console.error("Error fetching likes:", error);
-            }
+            } catch (error) {}
         };
 
         fetchLikes();
@@ -44,10 +40,7 @@ function PostCard({ post, isSubscribed }) {
         const token = keycloak?.token;
         const userId = keycloak?.tokenParsed?.sub;
 
-        if (!token || !userId) {
-            console.error("Token or User ID not available");
-            return;
-        }
+        if (!token || !userId) return;
 
         try {
             const result = await toggleLike(post.id, token);
@@ -58,15 +51,13 @@ function PostCard({ post, isSubscribed }) {
                 setLikes((prev) => prev - 1);
                 setLiked(false);
             }
-        } catch (error) {
-            console.error("Error toggling like:", error);
-        }
+        } catch (error) {}
     };
 
     return (
         <Card
             sx={{
-                width: 600,
+                width: "100%",
                 borderRadius: 4,
                 boxShadow: 3,
                 display: "flex",
@@ -74,6 +65,11 @@ function PostCard({ post, isSubscribed }) {
                 marginBottom: 3,
                 overflow: "hidden",
                 position: "relative",
+                backgroundColor: "#fdfdfd",
+                transition: "transform 0.3s ease",
+                "&:hover": {
+                    transform: "scale(1.03)",
+                },
             }}
         >
             <CardMedia
@@ -82,9 +78,9 @@ function PostCard({ post, isSubscribed }) {
                 alt="post image"
                 sx={{
                     width: "100%",
-                    height: 600,
+                    height: 300,
                     objectFit: "cover",
-                    filter: isSubscribed ? "none" : "blur(10px)",
+                    filter: isSubscribed ? "none" : "blur(8px)",
                     transition: "filter 0.3s ease",
                 }}
             />
@@ -102,7 +98,7 @@ function PostCard({ post, isSubscribed }) {
                         justifyContent: "center",
                         backgroundColor: "rgba(0, 0, 0, 0.5)",
                         color: "white",
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: "bold",
                         textAlign: "center",
                     }}
@@ -111,32 +107,27 @@ function PostCard({ post, isSubscribed }) {
                 </Box>
             )}
 
-            <CardContent
-                sx={{
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                }}
-            >
-                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Avatar alt={post.authorName || "User"} src={user} />
                     <Box sx={{ ml: 2 }}>
-                        <Typography variant="body2" color="text.primary">
-                            {post.authorName || "OnlyPans User"}{" "}
-                            {formattedTimestamp && `- ${formattedTimestamp}`}
+                        <Typography variant="subtitle1" fontWeight="bold">
+                            {post.authorName || "OnlyPans User"}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            {formattedTimestamp}
                         </Typography>
                     </Box>
                 </Box>
 
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography variant="body2" color="text.secondary">
                     {isSubscribed
                         ? post.contentDescription || "Check out this recipe!"
                         : "Subscribe to see the full description..."}
                 </Typography>
 
-                <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-                    <IconButton aria-label="like" onClick={handleLikeToggle}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+                    <IconButton onClick={handleLikeToggle}>
                         <img
                             src={like}
                             alt="like"
@@ -150,12 +141,12 @@ function PostCard({ post, isSubscribed }) {
                             {likes}
                         </Typography>
                     </IconButton>
-                    <IconButton aria-label="comment" onClick={() => setShowComments((prev) => !prev)}>
+                    <IconButton onClick={() => setShowComments((prev) => !prev)}>
                         <img src={comment} alt="comment" style={{ height: "24px", width: "24px" }} />
                     </IconButton>
                 </Box>
 
-                {(showComments &&  isSubscribed) && <Comments postId={post.id} />}
+                {showComments && isSubscribed && <Comments postId={post.id} />}
             </CardContent>
         </Card>
     );
