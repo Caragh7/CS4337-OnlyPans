@@ -1,11 +1,13 @@
 import axios from 'axios';
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Card, CardContent, CardMedia, Typography, Avatar, Box, TextField, Button, Modal, Backdrop, Snackbar, Alert } from '@mui/material';
 import placeholder from '../assets/placeholder.jpg';
 import user from '../assets/user.png';
+import { KeycloakContext } from "./KeyCloakContext";
 
 function CreatePost({ open, onClose }) {
+    const { keycloak } = useContext(KeycloakContext);
     const [content, setContent] = useState('');
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(placeholder);
@@ -30,32 +32,46 @@ function CreatePost({ open, onClose }) {
 
         console.log("Requesting presigned URL")
         try {
+            const token = keycloak?.token;
+            if (!token) {
+                console.error("Token not available");
+                return;
+            }
+
+            console.log("Requesting presigned URL");
             const fileName = image.name;
+
             const { data: presignedUrl } = await axios.get('http://localhost:8080/media/presigned-url', {
-                params: { fileName }
+                params: { fileName },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             });
 
             await axios.put(presignedUrl, image, {
                 headers: {
-                    'Content-Type': image.type
-                }
+                    'Content-Type': image.type,
+                },
             });
 
             const postContent = {
                 contentDescription: content,
-                authorName: 'someone',
-                mediaUrl: fileName
+                authorName: keycloak.tokenParsed?.name || 'Onlypans User',
+                mediaUrl: fileName,
             };
 
-            const { data: createdPost } = await axios.post('http://localhost:8080/posts', postContent);
-            console.log("Created Post:", createdPost);
+            const { data: createdPost } = await axios.post('http://localhost:8080/posts', postContent, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
+            console.log("Created Post:", createdPost);
             setContent('');
             setImage(null);
             setPreview(placeholder);
             setSuccessOpen(true);
             onClose();
-
         } catch (error) {
             console.error('Error creating post:', error);
             alert('There was an error creating the post.');

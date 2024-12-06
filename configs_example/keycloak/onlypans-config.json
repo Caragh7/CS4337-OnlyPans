@@ -1,0 +1,69 @@
+{
+  "realm": "onlypans",
+  "enabled": true,
+  "accessTokenLifespan": 3600,
+  "browserFlow": "Custom Browser Flow",
+  "clients": [
+    {
+      "clientId": "onlypans-frontend",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "redirectUris": [
+        "http://localhost:3000/*"
+      ],
+      "publicClient": true,
+      "directAccessGrantsEnabled": false,
+      "standardFlowEnabled": true
+    }
+  ],
+  "identityProviders": [
+    {
+      "alias": "google",
+      "providerId": "google",
+      "enabled": true,
+      "updateProfileFirstLoginMode": "on",
+      "authenticateByDefault": true,
+      "linkOnly": false,
+      "trustEmail": true,
+      "storeToken": true,
+      "addReadTokenRoleOnCreate": true,
+      "config": {
+        "clientId": "CLIENT_ID",
+        "clientSecret": "CLIENT_SECRET",
+        "useJwksUrl": "true",
+        "authorizationUrl": "https://accounts.google.com/o/oauth2/auth",
+        "tokenUrl": "https://oauth2.googleapis.com/token",
+        "logoutUrl": "https://accounts.google.com/logout",
+        "userInfoUrl": "https://openidconnect.googleapis.com/v1/userinfo",
+        "defaultScope": "email profile"
+      }
+    }
+  ],
+  "authenticationFlows": [
+    {
+      "alias": "Custom Browser Flow",
+      "description": "Browser flow without username/password, only Google login",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "identity-provider-redirector",
+          "requirement": "REQUIRED",
+          "priority": 0,
+          "userSetupAllowed": false,
+          "authenticatorFlow": false,
+          "authenticatorConfig": "autoRedirectToProvider"
+        }
+      ]
+    }
+  ],
+  "authenticatorConfig": [
+    {
+      "alias": "autoRedirectToProvider",
+      "config": {
+        "defaultProvider": "google"
+      }
+    }
+  ]
+}
