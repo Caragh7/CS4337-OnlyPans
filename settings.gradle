@@ -16,4 +16,6 @@ findProject(':backend_services:common:src.main.java.onlypans.common.exceptions')
 include 'api_gateway'
 include 'backend_services:engagementService'
 findProject(':backend_services:engagementService')?.name = 'engagementService'
+include 'backend_services:subscriptionService:tests'
+findProject(':backend_services:subscriptionService:tests')?.name = 'tests'
 

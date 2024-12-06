@@ -5,6 +5,14 @@ public class CreatePriceRequest {
     private String price;
     private String creatorName;
 
+    public CreatePriceRequest() {};
+
+    public CreatePriceRequest(String creatorProfileId, String price, String creatorName) {
+        this.creatorProfileId = creatorProfileId;
+        this.price = price;
+        this.creatorName = creatorName;
+    }
+
     public String getCreatorProfileId() {
         return creatorProfileId;
     }

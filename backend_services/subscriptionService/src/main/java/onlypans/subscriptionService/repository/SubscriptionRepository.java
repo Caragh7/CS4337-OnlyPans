@@ -14,4 +14,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     @Query("SELECT s.creatorProfileId FROM Subscription s WHERE s.userId = :userId AND s.state = 'ACTIVE'")
     List<Long> findCreatorProfileIdsByUserId(@Param("userId") String userId);
-    }
+   
+    Subscription findByStripeSubscriptionId(String stripeSubscriptionId);
+}

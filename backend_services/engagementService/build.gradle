@@ -35,6 +35,8 @@ dependencies {
     implementation project(':backend_services:postService')
     implementation project(":backend_services:common")
 
+
+    testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mockito:mockito-core'
     testImplementation 'org.mockito:mockito-junit-jupiter'
