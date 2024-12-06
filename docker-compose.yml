@@ -32,9 +32,6 @@ services:
     image: rabbitmq:3-management
     env_file:
       - ./configs/email-notification-service.env
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     networks:
       - backend
 

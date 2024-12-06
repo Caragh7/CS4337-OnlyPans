@@ -146,9 +146,6 @@ services:
     image: rabbitmq:3-management
     env_file:
       - ./configs/email-notification-service.env
-    ports:
-      - "5673:5672"
-      - "15672:15672"
     networks:
       - captain-overlay-network
 
