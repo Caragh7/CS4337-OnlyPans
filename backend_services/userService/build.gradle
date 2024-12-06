@@ -1,5 +1,5 @@
 plugins {
-	id 'java-library'
+	id 'java'
 
 id 'org.springframework.boot' version '3.3.4'
 	id 'io.spring.dependency-management' version '1.1.6'
@@ -32,7 +32,15 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
 
+	testImplementation  'org.junit.jupiter:junit-jupiter-api'
+	implementation project(':backend_services:common')
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+	testImplementation 'org.mockito:mockito-core'
+	testImplementation 'org.mockito:mockito-junit-jupiter'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 
+	runtimeOnly 'com.h2database:h2'
 
 
 }
@@ -42,6 +50,9 @@ dependencyManagement {
 	}
 }
 
+tasks.withType(Test) {
+	useJUnitPlatform()
+}
 
 
 bootJar {
