@@ -148,9 +148,9 @@ services:
       - ./configs/email-notification-service.env
     ports:
       - "5672:5672"
-      - "15673:15672"
+      - "15672:15672"
     networks:
-      - backend
+      - captain-overlay-network
 
     # Email Notification Service
   email-notification-service:
@@ -166,7 +166,7 @@ services:
       - consul
       - api-gateway
     networks:
-      - backend
+      - captain-overlay-network
 
   frontend:
     build:
