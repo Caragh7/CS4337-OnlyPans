@@ -11,6 +11,10 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Clean Docker Cache
+      - run: |
+      - docker system prune -af
+      -
       # Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -41,6 +45,7 @@ jobs:
         run: |
           chmod +x gradlew
           find . -name "gradlew" -exec chmod +x {} \;
+      
 
       # Build Backend JARs
       - name: Build JARs
