@@ -50,7 +50,7 @@ jobs:
           ./gradlew -p backend_services/postService clean build || echo "No gradlew in postService"
           ./gradlew -p backend_services/mediaService clean build -x test || echo "No gradlew in mediaService"
           ./gradlew -p backend_services/engagementService clean build || echo "No gradlew in engagementService"
-          ./gradlew -p backend_services/creatorService clean build -x test || echo "No gradlew in creatorService"
+          ./gradlew -p backend_services/creatorService clean build || echo "No gradlew in creatorService"
           ./gradlew -p api_gateway clean build -x test || echo "No gradlew in api_gateway"
 
       # Debug Built Files
