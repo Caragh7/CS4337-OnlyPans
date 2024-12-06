@@ -24,7 +24,7 @@ public class EmailController {
             String userEmail = null;
             if (authentication instanceof JwtAuthenticationToken jwtAuth) {
                 Map<String, Object> claims = jwtAuth.getTokenAttributes();
-                userEmail = (String) claims.get("email"); // Extract email from the claims
+                userEmail = (String) claims.get("email");
             }
 
             if (userEmail == null) {
