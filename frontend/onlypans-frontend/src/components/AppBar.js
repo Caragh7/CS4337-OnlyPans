@@ -32,7 +32,7 @@ function ResponsiveAppBar({ onToggleCreatePost, isCreator }) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const enableCreatePost = location.pathname === "/allPosts" || location.pathname === "/yourFeed" && isCreator;
+    const enableCreatePost = location.pathname === "/posts" || location.pathname === "/feed" && isCreator;
 
     const handleProfileClick = () => {
         handleCloseUserMenu(); // Close the dropdown
